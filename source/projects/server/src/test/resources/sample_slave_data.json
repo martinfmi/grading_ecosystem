@@ -1,0 +1,30 @@
+{
+" format ": "core - contest -1",
+" title ": " Homework 1",
+" start_time ": " 2012 -06 -28 T09 :00:00 Z",
+" duration ": 300 ,
+" about ": "",
+" grading_style ": " acm ",
+" problem_order ": [" fish ", " honey ", " swim "],
+" problemScores ": [120 , 150 , 80]
+}
+
+{
+" format ": "core - problem -1",
+" title ": "hw1 - problem -A",
+" about ": "", 
+" time_limit ": 4.5 ,
+" memory_limit ": 64,
+" origin ": " Taken from Contest -X",
+" notes ": " Dynamic Programming ",
+" authors ":[" author1 ", " author2 "],
+" test_weights ": [5, 10, 10, 10, 15] ,
+" checker ": " diff "
+}
+
+{
+"type": "standard",
+"title": "Design and analyses of algorithms - 2013",
+"about": " Lectors :... , Hours :... etc .",
+"notes": "( Some sensitive information )"
+}

@@ -1,0 +1,62 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>fmi.uni.grading</groupId>
+	<artifactId>parent</artifactId>
+	<version>1.0.0</version>
+	<name>Parent Module</name>
+	<packaging>pom</packaging>
+	<description>Parent module used to build the entire Grading Ecosystem (all projects)</description>
+
+	<properties>
+		<spring.version>3.2.3.RELEASE</spring.version>
+		<cxf.version>2.7.5</cxf.version>
+		<jaxb.version>2.1.13</jaxb.version>
+		<grading.shared>1.0.0</grading.shared>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- Spring Framework -->
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<!-- Apache CXF -->
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-frontend-jaxws</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-transports-http</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
+			<!-- Jetty is needed if you're are not using the CXFServlet -->
+			<!-- <dependency> -->
+			<!-- <groupId>org.apache.cxf</groupId> -->
+			<!-- <artifactId>cxf-rt-transports-http-jetty</artifactId> -->
+			<!-- <version>${cxf.version}</version> -->
+			<!-- </dependency> -->
+			<!-- <dependency> -->
+			<!-- <groupId>org.apache.cxf</groupId> -->
+			<!-- <artifactId>cxf-rt-ws-rm</artifactId> -->
+			<!-- <version>${cxf.version}</version> -->
+			<!-- </dependency> -->
+			<!-- JAXB -->
+			<dependency>
+				<groupId>com.sun.xml.bind</groupId>
+				<artifactId>jaxb-impl</artifactId>
+				<version>${jaxb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>fmi.uni.grading</groupId>
+				<artifactId>shared</artifactId>
+				<version>${grading.shared}</version>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+</project>

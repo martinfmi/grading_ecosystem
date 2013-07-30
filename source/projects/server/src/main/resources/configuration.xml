@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- this is the main configuration file of the server -->
+<server>
+	<!-- MASTER/SLAVE -->
+	<type>MASTER</type>
+	<!-- SERVER PORT -->	
+	<port>6607</port>
+</server>
