@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Eclipse
-Bundle-SymbolicName: eclipse
+Bundle-SymbolicName: eclipse-plugin
 Bundle-Version: 1.0.0
 Bundle-Activator: fmi.uni.grading.Activator
 Bundle-Vendor: FMI
