@@ -1,0 +1,44 @@
+<h1>Потребители</h1>
+<p><%= link_to "Нов потребител", :action => "new" %></p>
+<br />
+<p>
+	<%= form_for @search, :as => :search, :url => { :action => :index }, :html => { :method => :get } do |f| -%>
+	  <p>
+	  	<%= f.label :q, "Търсене:" %>
+			<%= f.text_field :q %>
+			<%= f.submit "Филтрирай" %>
+	  </p>
+	<% end -%>
+</p>
+<br />
+</p>
+	<%= will_paginate @users %>
+	<% if !@users.blank? %>
+  <table>
+    <tr>
+      <th>Login</th>
+      <th>Име</th>
+      <th>Email</th>
+      <th>Админ?</th>
+	  <th>Състезател?</th>
+      <th>Действия</th>
+    </tr>
+  <% for user in @users do %>
+    <tr>
+      <td><%= user.login %></td>
+      <td><%= user.name %></td>
+      <td><%= user.email %></td>
+      <td><%= check_box_tag "is_admin_#{user.login}", "1", user.admin?, :disabled => true %></td>
+	  <td><%= check_box_tag "is_contester_#{user.login}", "1", user.contester?, :disabled => true %></td>
+      <td>
+        <%= link_to "Админ преглед", admin_user_path(user) %> |
+        <%= link_to "Преглед", user_path(user) %> |
+        <%= link_to "Промяна", edit_admin_user_path(user) %> |
+        <%= link_to "Изтриване", admin_user_path(user), :confirm => "Сигурни ли сте, че искате да изтриете този потребител?", :method => :delete %>
+      </td>
+    </tr>
+  <% end %>
+  </table>
+	<%= will_paginate @users %>
+<% end %>
+<br />

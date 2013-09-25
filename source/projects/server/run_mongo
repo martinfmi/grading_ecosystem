@@ -1,0 +1,2 @@
+#single instance for testing purposes
+mongod --dbpath "D:\stuff\study\Masters of Parallel Systems and Mobile Technologies\diploma_project\sample_db"

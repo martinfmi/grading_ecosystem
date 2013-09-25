@@ -1,0 +1,32 @@
+<p>
+  <%= f.label :name, "Име:" %>
+  <%= f.text_field :name %>
+</p>
+<p>
+<%= f.label :categories, "Категории:" %>
+<% Category.all.each do |category| %>
+  <p>
+    <label><%= check_box_tag "problem[category_ids][]", category.id, @problem.categories.include?(category) %>
+    <%= category.name %></label>
+  </p>
+<% end %>
+</p>
+<p>
+  <%= f.label :time_limit, "Time limit:" %>
+  <%= f.text_field :time_limit %>
+  <em>In seconds. Can be a float number (ex. 0.34)</em>
+</p>
+<p>
+  <%= f.label :memory_limit, "Memory limit:" %>
+  <%= f.text_field :memory_limit %>
+  <em>In bytes. Should be integer</em>
+</p>
+<p>
+  <%= f.label :diff_parameters, "Diff parameters:" %>
+  <%= f.text_field :diff_parameters %>
+  <em>
+    Допълнителни параметри на diff програмата, която проверява отговора на състезателите. Някой възможни стойности:
+    <b>-b</b> Ignore changes in the amount of white space. Полезно когато не ни интересува нали на последната линия има нов ред.
+    <b>-B</b> Ignore changes whose lines are all blank
+  </em>
+</p>

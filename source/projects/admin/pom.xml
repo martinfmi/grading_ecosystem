@@ -5,9 +5,7 @@
     <artifactId>parent</artifactId>
     <version>1.0.0</version>
   </parent>
-  <groupId>fmi.uni.grading</groupId>
   <artifactId>admin</artifactId>
-  <version>1.0.0</version>
   <name>Admin Web Application</name>
   <description>A web application for administration of the grading ecosystem</description>
 </project>

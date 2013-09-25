@@ -25,7 +25,7 @@ public class JaxbManager {
 	private static final Logger LOGGER = Logger.getLogger(JaxbManager.class
 			.getCanonicalName());
 
-	/**
+	/**	
 	 * Reads the configuration.
 	 */
 	@SuppressWarnings("unchecked")

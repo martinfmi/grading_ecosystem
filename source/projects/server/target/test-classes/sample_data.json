@@ -1,0 +1,82 @@
+// Series
+{
+	"type": "standard",
+	"title": "Design and analyses of algorithms - 2013",
+	"about": " Lectors :... , Hours :... etc .",
+	"notes": "( Some sensitive information )"
+	"contest_order" : [ "homework 1"] 
+	"parent": "Courses 2013"
+}
+
+// Contest
+{
+	"type": "standard",
+	"title": "Homework 1",
+	"start_time": "2012 -06 -28 T09 :00:00 Z",
+	"duration": 300,
+	"about": "",
+	"grading_style": "acm",
+	"problem_order ": [" fish ", " honey ", " swim "],
+	"problem_scores": [120 , 150 , 80]
+}
+
+// Problem
+{
+	"type": "standard",
+	"title": "hw1 - problem -A",
+	"description": "... problem description ...", 
+	"time_limit": 4.5,
+	"memory_limit": 64,
+	"origin": "Taken from Contest -X",
+	"categories": ["Dynamic Programming"],
+	"authors":["author1", "author2"],
+	"test_weights": [5, 10, 10, 10, 15] ,
+	"checker": "diff"
+}
+
+// Problem Category
+{
+	"name": "Spanning Trees"
+	"description":  "Problems on spanning trees"
+	"parent": "Graph Theory"
+}
+
+// Grader Instance
+{
+	"type": "spoj0"
+	"name": "spoj0-1"
+	"URL": "http://judge.openfmi.net:9080/spoj0/"	
+}
+
+// Submission
+{
+	"handle": "martin",
+	"grader_type": "spoj0",
+	"grader_handle": "martin_spoj0"
+	"series": "Design and analyses of algorithms - 2013"
+	"contest": "Homework 1"
+	"problem": "hw1 - problem -A"
+	"language" : "Java"
+	"source": "... source code ...",
+	"status": "ok", 
+	"results": ""
+}
+
+// Grader User
+{
+	"grader_type" : "spoj0"
+	"handle" : "martin_spoj0"
+	"pass": "skajdUOdsa77sadKL"
+}
+
+// User
+{
+	"handle" : "martin"
+	"name" : "Martin Toshev"
+	"pass" : "cX6kajsdU76"
+	"role" : "contestant"
+	"details" : ""
+	"permissions" : "rw"
+}
+
+// db - categories DB - create a category

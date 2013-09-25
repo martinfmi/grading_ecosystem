@@ -1,0 +1,42 @@
+<h1><%= @user.name %> <%= @user.city.blank? ? "" : "(#{@user.city})" %></h1>
+<h2>Статистика</h2>
+<ul class="no_bullets">
+  <li><strong>Общ брой точки:</strong> <%= @user.total_points %></li>
+  <li><strong>Пратени решения:</strong> <%= @user.runs.count %></li>
+  <li><strong>Решения за 100 точки:</strong> <%= @user.full_tasks %></li>
+  <li><strong>Участия в състезания:</strong> <%= @user.contest_start_events.count %></li>
+</ul>
+<script type="text/javascript" charset="utf-8">
+  var rating_report = <%= @rating_report.to_a.to_json.html_safe %>
+  var daily_submits_report = <%= @daily_submits_report.to_a.to_json.html_safe %>
+  var total_submits_report = <%= @total_submits_report.to_a.to_json.html_safe %>
+</script>
+<div id="rating_report"></div>
+<div id="daily_submits_report"></div>
+<div id="total_submits_report"></div>
+<h2>Последно пратени решения</h2>
+<% if @runs.empty? %>
+  <p>Потребителя няма пратени решения</p>
+<% else %>
+  <table class="runs_list">
+      <tr>
+          <th>Пратено на</th>
+          <th>Състезание</th>
+          <th>Задача</th>
+          <th>Потребител</th>
+          <th>Език</th>
+          <th>Статус</th>
+      </tr>
+  <% for run in @runs do %>
+      <tr>
+          <td><%= run.created_at %></td>
+          <td><%= link_to run.problem.contest.name, :controller => :practice, :action => :open_contest, :contest_id => run.problem.contest.id %></td>
+          <td><%= link_to run.problem.name, :controller => :practice, :action => :get_problem_description, :contest_id => run.problem.contest.id, :problem_id => run.problem.id %></td>
+          <td><%= link_to run.user.name, user_path(run.user) %></td>
+          <td><%= run.language %></td>
+          <td><%= run.status %></td>
+      </tr>
+  <% end %>
+  </table>
+<% end %>
+<%= link_to "Назад", :back %>

@@ -1,0 +1,43 @@
+<p>
+  <%= f.label :name, "Име:" %>
+  <%= f.text_field :name %>
+</p>
+<p>
+  <%= f.label :start_time, "Начало:" %>
+  <%= f.datetime_select :start_time %>
+</p>
+<p>
+  <%= f.label :start_time, "Край:" %>
+  <%= f.datetime_select :end_time %>
+</p>
+<p>
+  <%= f.label :duration, "Продължителност:" %>
+  <%= f.text_field :duration %>
+  <em>минути</em>
+</p>
+<p>
+  <%= f.label :runner_type, "Sandbox type:" %>
+  <%= f.select :runner_type, Contest::RUNNER_TYPES %>
+  <em>fork е много по-неточен метод, но работи за много различни езици. box е предпочитаният метод. Двата метода може да дават различни резултати за използваната памет и време!</em>
+</p>
+<p>
+  <%= f.label :visible, "Видимо ли е състезанието:" %>
+  <%= f.check_box :visible %>
+</p>
+<p>
+  <%= f.label :practicable, "Може ли да се упражнява:" %>
+  <%= f.check_box :practicable %>
+</p>
+<p>
+  <%= f.label :results_visible, "Видими ли са резултатите:" %>
+  <%= f.check_box :results_visible %>
+</p>
+<p>
+  <%= f.label :auto_test, "Автоматично тестване на решенията:" %>
+  <%= f.check_box :auto_test %>
+</p>
+<p>
+  <%= f.label :best_submit_results, "Класиране по най-добър събмит:" %>
+  <%= f.check_box :best_submit_results %>
+  <em>Ако това е избрано, класирането след състезанието ще е по най-доброто решение на всяка задача от състезателя, вместо по последното решение на всяка задача.</em>
+</p>

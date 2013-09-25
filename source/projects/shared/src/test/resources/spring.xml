@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xmlns:jaxrs-client="http://cxf.apache.org/jaxrs-client"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://cxf.apache.org/jaxrs
+		   http://cxf.apache.org/schemas/jaxrs.xsd
+		   http://cxf.apache.org/schemas/jaxrs-client.xsd">
+
+	<!-- TODO: remove link -->
+	<!-- for examples see: http://svn.apache.org/repos/asf/cxf/trunk/systests/jaxrs/src/test/resources/jaxrs_soap_rest/WEB-INF/beans.xml -->
+	
+	<!-- JAX-RS client -->
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-http.xml" /> 
+    <import resource="classpath:META-INF/cxf/cxf-extension-http-jetty.xml" /> 
+		
+	
+<!-- 	<bean id ="jaxrsServer" class="org.apache.cxf.jaxrs.JAXRSServerFactoryBean"/> -->
+	
+<!--   <bean id="petStore" -->
+<!--         class="org.springframework.samples.jpetstore.services.PetStoreServiceImpl"> -->
+<!--     <property name="accountDao" ref="accountDao"/> -->
+<!--     <property name="itemDao" ref="itemDao"/> -->
+<!--   </bean> -->
+		
+	
+<!--     <bean id="securityInterceptor" class="BasicAuthAuthorizationInterceptor"> -->
+<!--       <property name="users">  -->
+<!--         <map> -->
+<!--           <entry key="username" value="password"/> -->
+<!--         </map> -->
+<!--       </property> -->
+<!--     </bean> -->
+
+<!--     <bean id="service" class="sample.Service"/> -->
+    
+<!--     <jaxws:endpoint -->
+<!--       id="serviceEndpoint"  -->
+<!--       implementor="#service" -->
+<!--       address="${services.url}/Service"> -->
+<!--       <jaxws:inInterceptors> -->
+<!--         <ref bean="securityInterceptor"/> -->
+<!--       </jaxws:inInterceptors> -->
+<!--     </jaxws:endpoint> -->
+		
+</beans>
