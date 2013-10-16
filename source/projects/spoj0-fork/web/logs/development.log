@@ -1,0 +1,1 @@
+[23257] error @0.007547> [hit #1]request to PUT /contests/trivial/problems crashed: malformed JSON string, neither array, object, number, string or atom, at character offset 0 (before "(end of string)") at /usr/local/share/perl/5.14.2/Dancer/Serializer/JSON.pm line 62 in /usr/local/share/perl/5.14.2/Dancer/Handler.pm l. 98

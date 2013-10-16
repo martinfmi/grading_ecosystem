@@ -13,13 +13,17 @@ sub Usage{
 	die qq(
 Usage:
 	$0 start 
-		starts the deamon (needs root)
+		starts the daemon (needs root)
 	$0 start-here
 		starts the spoj0-daemon here (not as a daemon)
-	$0 stop 
-		stops the deamon (needs root)
-	$0 kill 
-		kills the deamon if it has blocked by some reason... 
+	$0 stop
+		stops the daemon (needs root)
+	$0 start-web-services
+		starts the spoj0 Dancer2 web services
+	$0 stop-web-services
+		stops the spoj0 Dancer2 web services
+	$0 kill
+		kills the daemon if it has blocked by some reason... 
 		use with care (needs root)
 	$0 rejudge-problem <problem_id> 
 		marks all submits on the given problem for redjudge 
@@ -68,6 +72,13 @@ elsif($cmd eq 'start-here'){
 }
 elsif($cmd eq 'stop'){
 	System "echo 'stop!' > $stop_file";
+}
+elsif($cmd eq 'start-web-services'){
+	System "start-stop-daemon --start -m --pidfile /var/run/spoj0-web-services.pid -b --exec $spoj_dir/web/services.pl";
+}
+elsif($cmd eq 'stop-web-services'){
+	System "start-stop-daemon --stop --pidfile /var/run/spoj0-web-services.pid";
+	System "rm /var/run/spoj0-web-services.pid";
 }
 elsif($cmd eq 'kill'){
 	System "echo 'stop!' > $stop_file";
@@ -185,7 +196,7 @@ sub ImportSet{
 			
 			my $chcmd = "chmod 0600 $prob_dir/test.ans";
 			System "$chcmd";
-
+			
 			ParseConf "$prob_dir/problem-info.conf", \%problem_data;
 			$problems{$pl} = \%problem_data; 
 			foreach my $pf(DirFiles "$prob_dir/"){

@@ -24,7 +24,7 @@ sub print_conts{
 		'action']),);
 
 	my $conts = GetContestsEx $dbh, {
-		'active' => 0,
+		'active' => 1,
 		'reverse' => 1,
 	};
 	foreach my $cont(@$conts){

@@ -10,12 +10,6 @@ IDENTIFIED BY 'stancho3' WITH GRANT OPTION;
 -- Table structure for table `contests`
 --
 
-DROP TABLE IF EXISTS `runs`;
-DROP TABLE IF EXISTS `users`;
-DROP TABLE IF EXISTS `problems`;
-DROP TABLE IF EXISTS `contests`;
-
-
 DROP TABLE IF EXISTS `contests`;
 CREATE TABLE `contests` (
   `contest_id` int(11) NOT NULL auto_increment,
@@ -61,6 +55,7 @@ CREATE TABLE `users` (
   `display_name` char(64) NOT NULL COMMENT 'Full name (ex: coaches - Manev, Sredkov, Bogdanov)',
   `about` text NOT NULL COMMENT 'about the user',
   `hidden` int(11) NOT NULL default 0 COMMENT 'whether the submits of this user does not show come in the board',
+  `admin` int(11) NOT NULL default 0 COMMENT 'whether the user is admin',
   PRIMARY KEY  (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='User accounts (may be teams also)';
 

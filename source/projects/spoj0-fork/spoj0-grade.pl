@@ -158,8 +158,7 @@ sub Run{
 			die "Unsupported language $lang!";
 		}
 		
-		my $run = "time timeout $gross_time $exec < $run_in >$run_out 2>>$EXEC_DIR/run.err";
-		
+		my $run = "timeout $gross_time $exec < $run_in >$run_out 2>>$EXEC_DIR/run.err";
 		
 		my $megarun = "launchtool --stats --tag=spoj0-grade --limit-process-count=30 "
 			."--limit-open-files=60 --user=spoj0run '$run' > $EXEC_DIR/time.out";
@@ -231,7 +230,6 @@ if($status eq 'ok'){ #run
 		}
 	}
 }
-
 
 
 

@@ -9,23 +9,30 @@ use vars qw(@ISA @EXPORT);
 
 @ISA = ('Exporter');
 @EXPORT = qw(
-&ParseConf 
-&SqlInsert 
+&ParseConf
+&SqlSelect
+&SqlInsert
+&SqlUpdate
+&SqlDelete
 &SqlSync 
 &SqlNow &SqlConnect &System &WebNavMenu 
 &Login 
+&GetUsers
+&GetUserByCredentials
+&GetUserById
 &RegisterUser
 &GetProblemInfo 
 &GetContestInfo
 &GetContestInfo
 &GetContestExInfo
 &GetRunInfo
+&GetProblemRunInfos
+&GetUserRunInfos
 &GetRunExInfo
 &ReadFile
 &WriteFile
 &DirFiles
 &DosToUnix 
-&SqlSelect
 &GetNews
 &GetProblemsEx
 &GetContestsEx
@@ -41,6 +48,8 @@ $TESTER_ID
 %LANGUAGES
 %DEFAULT_SOURCE_FILE
 $DEFAULT_LANG 
+$DEFAULT_DESCRIPTION_TYPE
+$NAME_PATTERN
 @TITLES
 );
 
@@ -73,6 +82,10 @@ our %DEFAULT_SOURCE_FILE = (
 	'java' => "program.java",
 );
 
+our $NAME_PATTERN = '^[ \w\-_]+$';
+
+our $DEFAULT_DESCRIPTION_TYPE = 'pdf';
+
 our $DEFAULT_LANG = 'cpp';
 
 our @TITLES = (
@@ -99,6 +112,13 @@ sub ParseConf{
 	close $file;
 }
 
+sub SqlSelect{
+	my $dbh = shift or die;
+	my $query = shift or die;
+	my $st = $dbh->prepare($query);
+	$st->execute() or die "Unable to execute statment!";
+	return $st->fetchall_arrayref({});
+}
 
 sub SqlInsert{
 	my $handle = shift or die; #ref
@@ -121,6 +141,69 @@ sub SqlInsert{
 #		print "\t$b\n";
 	}
 	
+	$$handle->do($sql, undef, @binds);
+}
+
+sub SqlUpdate {
+	my $handle = shift or die; #ref
+	my $table = shift or die;
+	my $where = shift or die;
+	my $values = shift or die; #ref
+	
+	my $sql = "update $table set ";
+	my @sql_parts = ();
+	my @binds = ();
+	
+	foreach my $key(keys(%$values)){
+		push @sql_parts, "$key=?";
+		push @binds, $$values{$key};
+	}
+	$sql .= join(', ', @sql_parts);
+	$sql .= (' where ');
+
+	my @where_parts = ();
+	my $iter = 0;
+		
+	foreach my $key(keys(%$where)){
+		if($iter == 0) {
+			push @where_parts, "$key=?";
+		} else {
+			push @where_parts, "and $key=?";
+		}
+		push @binds, $$where{$key};
+		$iter++;
+	}
+	
+	$sql .= join(' ', @where_parts);
+	
+	$$handle->do($sql, undef, @binds);
+}
+
+sub SqlDelete {
+	my $handle = shift or die; #ref
+	my $table = shift or die;
+	my $where = shift or die;
+	
+	my $sql = "delete from $table";
+	my @sql_parts = ();
+	my @binds = ();
+	
+	if(%$where) {
+		$sql .= " where ";
+		my $iter = 0;
+		foreach my $key(keys(%$where)){
+			if($iter == 0) {
+				push @sql_parts, "$key=?";
+			} else {
+				push @sql_parts, "and $key=?";
+			}
+			push @binds, $$where{$key};
+			$iter++;
+		}			
+		
+		$sql .= join(' ', @sql_parts);
+	}
+		
 	$$handle->do($sql, undef, @binds);
 }
 
@@ -193,7 +276,36 @@ sub Login{
 	my $res = $login_st->fetchrow_hashref;
 	$login_st->finish;
 	return $res ? $$res{'user_id'} : undef;
-	
+}
+
+# retrieves all users
+sub GetUsers {
+	my $dbh = shift or die;
+	my $query = "SELECT * FROM users";
+	SqlSelect $dbh, $query;
+}
+
+# retrieve a user by provided credentials
+sub GetUserByCredentials {
+	my $dbh = shift or die;
+	my $username = shift;
+	my $password = shift;
+	my $login_st = $dbh->prepare("SELECT * FROM users WHERE name=? AND pass_md5=MD5(?)");
+	$login_st->execute($username, $password);
+	my $res = $login_st->fetchrow_hashref;
+	$login_st->finish;
+	return $res ? $res : undef;
+}
+
+# retrieves a user by id
+sub GetUserById {
+	my $dbh = shift or die;
+	my $user_id = shift;
+	my $login_st = $dbh->prepare("SELECT * FROM users WHERE user_id=? ");
+	$login_st->execute($user_id);
+	my $res = $login_st->fetchrow_hashref;
+	$login_st->finish;
+	return $res ? $res : undef;
 }
 
 sub RegisterUser{
@@ -250,7 +362,7 @@ sub GetContestExInfo{
 			show_sources && UNIX_TIMESTAMP(NOW()) <= UNIX_TIMESTAMP(start_time) + duration*60 as c_online,
 			show_sources && UNIX_TIMESTAMP(NOW()) > UNIX_TIMESTAMP(start_time) + duration*60 as c_offline
 			
-		from contests ;
+		from contests ;GetProblemsEx
 where contest_id=?;
 	^);
 	$contest_st->execute($contest_id) or die "Unable to execute statment!";
@@ -266,10 +378,32 @@ sub GetRunInfo{
 	my $dbh = shift or die;
 	my $run_id = shift or die;
 	my $run_st = $$dbh->prepare(	"SELECT * from runs where run_id=?");
-	$run_st->execute($run_id) or die "Unable to execute statment!";
+	$run_st->execute($run_id) or die "Unable to execute statement!";
 	my $run = $run_st->fetchrow_hashref;
 	$run_st->finish;
 	return $run ? $run : undef;
+}
+
+# retrieves runs for a particular problem
+sub GetProblemRunInfos {
+	my $dbh = shift or die;
+	my $problem_id = shift or die;
+	my $run_st = $$dbh->prepare("SELECT * from runs where problem_id=?");
+	$run_st->execute($problem_id) or die "Unable to execute statement!";
+	my $run = $run_st->fetchall_arrayref({});
+	$run_st->finish;
+	return $run;
+}
+
+# retrieves runs for a particular user
+sub GetUserRunInfos{
+	my $dbh = shift or die;
+	my $user_id = shift or die;
+	my $run_st = $$dbh->prepare("SELECT * from runs where user_id=?");
+	$run_st->execute($user_id) or die "Unable to execute statement!";
+	my $run = $run_st->fetchall_arrayref({});
+	$run_st->finish;
+	return $run;
 }
 
 #returns hash ref, or undef is no such
@@ -349,25 +483,17 @@ sub DosToUnix {
 	WriteFile $fn, $text;
 }
 
-sub SqlSelect{
-	my $dbh = shift or die;
-	my $query = shift or die;
-	my $st = $dbh->prepare($query);
-	$st->execute() or die "Unable to execute statment!";
-	return $st->fetchall_arrayref({});
-}
-
-
 sub GetNews{
 	my $dbh = shift or die;
 	my $f = shift;
 	my $q = "SELECT * FROM news WHERE 1=1 ";
 	$q .= ' AND file='.$dbh->quote($$f{'file'}) 
 		if $$f{'file'};
+	$q .= ' AND new_id='.$dbh->quote($$f{'new_id'}) 
+		if $$f{'new_id'};
 	$q .= ' ORDER BY new_id DESC ';
-	return SqlSelect $dbh, $q;
+	SqlSelect $dbh, $q;
 }
-
 
 sub GetProblemsEx{
 	my $dbh = shift or die;
