@@ -5,7 +5,7 @@ use spoj0;
 use Dancer;
 use Dancer::Serializer::JSON;
 use MIME::Base64 qw( decode_base64 );
-use Digest::MD5  qw(md5_hex);
+use Digest::MD5 qw(md5_hex);
 
 set serializer   => 'JSON';
 set logger       => 'file';
@@ -1586,7 +1586,7 @@ get '/contests/:id/problems/:problem_id/submissions/:submission_id/?' => sub {
 
 				delete $run_info->{problem_id};
 				delete $run_info->{source_name};
-				
+
 				my $finished =
 				  ( $cont->{'unow'} - $cont->{'c_start'} ) / 60 >
 				  $cont->{'duration'};
@@ -1649,7 +1649,8 @@ put '/contests/:id/problems/:problem_id/submissions/rejudge/?' => sub {
 		if ( exists( request->params->{failedOnly} )
 			&& request->params->{failedOnly} eq lc("true") )
 		{
-			system( "cd $HOME_DIR; ./spoj0-control.pl rejudge-problem $problem_id 2> "
+			system(
+"cd $HOME_DIR; ./spoj0-control.pl rejudge-problem $problem_id 2> "
 				  . "/home/spoj0run/services.log" );
 			( $response_code, $response ) = (
 				0,
@@ -1659,7 +1660,7 @@ put '/contests/:id/problems/:problem_id/submissions/rejudge/?' => sub {
 		}
 		else {
 			system(
-				"cd $HOME_DIR; ./spoj0-control.pl rejudge-problem-all $problem_id 2> "
+"cd $HOME_DIR; ./spoj0-control.pl rejudge-problem-all $problem_id 2> "
 				  . "/home/spoj0run/services.log" );
 			( $response_code, $response ) = (
 				0,
@@ -1691,11 +1692,12 @@ put '/submissions/:submission_id/rejudge/?' => sub {
 
 		my $run_info = GetRunInfo( \$dbh, $submission_id );
 		if ($run_info) {
-			system( "cd $HOME_DIR; ./spoj0-control.pl rejudge-run $submission_id 2> "
+			system(
+"cd $HOME_DIR; ./spoj0-control.pl rejudge-run $submission_id 2> "
 				  . "/home/spoj0run/services.log" );
-			( $response_code, $response ) = 
+			( $response_code, $response ) =
 			  ( 0, "Submissions with id '$submission_id' rejudged." );
-			  return;
+			return;
 		}
 
 		( $response_code, $response ) = (
@@ -1720,7 +1722,7 @@ get '/users/?' => sub {
 			return;
 		}
 
-		my $users = GetUsers( $dbh );
+		my $users = GetUsers($dbh);
 		( $response_code, $response ) = ( 0, $users );
 	};
 	resp $response_code, $response, $@;
@@ -1794,11 +1796,13 @@ put '/users/?' => sub {
 			'name'         => $username,
 			'pass_md5'     => md5_hex($password),
 			'display_name' => $user_data->{display_name},
-			'hidden' => exists( $user_data->{hidden} ) ? $user_data->{hidden}: 0,
-			'admin' => exists( $user_data->{admin} ) ? $user_data->{admin}: 0,
-			'about'        => ""
+			'hidden'       => exists( $user_data->{hidden} )
+			? $user_data->{hidden}
+			: 0,
+			'admin' => exists( $user_data->{admin} ) ? $user_data->{admin} : 0,
+			'about' => ""
 		);
-		
+
 		$data{'about'} .= " city:" . ( $user_data->{city} )
 		  if ( exists( $user_data->{city} ) );
 		$data{'about'} .= " inst:" . $user_data->{institution}
@@ -1815,8 +1819,8 @@ put '/users/?' => sub {
 		  if ( exists( $user_data->{other} ) );
 
 		SqlInsert( \$dbh, 'users', \%data );
-		my $added_user = GetUserByCredentials($dbh, $username, $password);
-		($response_code, $response) = (0, $added_user);
+		my $added_user = GetUserByCredentials( $dbh, $username, $password );
+		( $response_code, $response ) = ( 0, $added_user );
 	};
 
 	resp $response_code, $response, $@;
@@ -1842,8 +1846,9 @@ del '/users/:user_id/?' => sub {
 		if ($get_user) {
 			SqlDelete( \$dbh, 'users', { "user_id" => $user_id } );
 		}
-		
-		($response_code, $response) = (0, "User with id '$user_id' deleted.");
+
+		( $response_code, $response ) =
+		  ( 0, "User with id '$user_id' deleted." );
 	};
 	resp $response_code, $response, $@;
 };
@@ -1879,7 +1884,7 @@ get '/users/:user_id/submissions/?' => sub {
 			delete $run_info->{problem_id};
 			delete $run_info->{source_name};
 		}
-		
+
 		( $response_code, $response ) = ( 0, $run_infos );
 	};
 	resp $response_code, $response, $@;
@@ -1915,7 +1920,7 @@ get '/users/:user_id/submissions/:submission_id' => sub {
 		if ($run_info) {
 			delete $run_info->{problem_id};
 			delete $run_info->{source_name};
-			
+
 			if ( $user_id == $run_info->{user_id} ) {
 				( $response_code, $response ) = ( 0, $run_info );
 				return;
@@ -1944,7 +1949,7 @@ get '/news/?' => sub {
 			return;
 		}
 
-		my $news = GetNews( $dbh );
+		my $news = GetNews($dbh);
 		( $response_code, $response ) = ( 0, $news );
 	};
 	resp $response_code, $response, $@;
@@ -1965,7 +1970,7 @@ get '/news/:id?' => sub {
 		if ( !( $id =~ /^\d+$/ ) ) {
 			( $response_code, $response ) =
 			  ( 1, "News item id must be an integer." );
-			  return;
+			return;
 		}
 
 		my $news = GetNews( $dbh, { 'new_id' => $id } );
@@ -2020,7 +2025,7 @@ put '/news/?' => sub {
 			return;
 		}
 
-		my $existing_news = GetNews( $dbh, { 'file' => $file.".new" } );
+		my $existing_news = GetNews( $dbh, { 'file' => $file . ".new" } );
 		if ( scalar @$existing_news ) {
 			( $response_code, $response ) = (
 				5, "News with filename '${file}.new' already exists in system."
@@ -2035,9 +2040,9 @@ put '/news/?' => sub {
 			'content'  => $content
 		);
 
-		writeContents("$NEWS_DIR/${file}.new", $topic."\n".$content);
+		writeContents( "$NEWS_DIR/${file}.new", $topic . "\n" . $content );
 		SqlInsert( \$dbh, 'news', \%news_data );
-		my $added_news = GetNews( $dbh, { 'file' => $file.".new" } )->[0];
+		my $added_news = GetNews( $dbh, { 'file' => $file . ".new" } )->[0];
 		( $response_code, $response ) = ( 0, $added_news );
 	};
 	resp $response_code, $response, $@;
@@ -2081,7 +2086,7 @@ post '/news/?' => sub {
 		);
 
 		my $existing_file = $existing->{file};
-		my $file = $news_data{'file'};
+		my $file          = $news_data{'file'};
 		system("rm $NEWS_DIR/$existing_file");
 		writeContents( "$NEWS_DIR/$file",
 			$news_data{'topic'} . "\n" . $news_data{'content'} );
@@ -2107,7 +2112,7 @@ del '/news/:id?' => sub {
 		if ( !( $id =~ /^\d+$/ ) ) {
 			( $response_code, $response ) =
 			  ( 1, "News item id must be an integer." );
-			  return;
+			return;
 		}
 
 		my $existing_news = GetNews( $dbh, { 'new_id' => $id } );
