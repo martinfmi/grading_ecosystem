@@ -8,4 +8,18 @@
   <artifactId>spoj0-bridge</artifactId>
   <name>Spoj0 Bridge</name>
   <description>Application that provides the integration with the Spoj0 system</description>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

@@ -1,0 +1,2 @@
+User-Client: fmi.uni.grading.spoj0.clients.Spoj0UserClient
+Admin-Client: fmi.uni.grading.spoj0.clients.Spoj0AdminClient
