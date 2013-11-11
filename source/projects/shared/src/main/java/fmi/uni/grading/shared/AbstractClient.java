@@ -12,6 +12,9 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.provider.AbstractJAXBProvider;
 import org.apache.cxf.jaxrs.provider.json.JSONProvider;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
+
+import fmi.uni.grading.shared.exceptions.handlers.client.ClientErrorHandler;
 
 /**
  * This abstract class provides common logic for all server clients.
@@ -47,8 +50,10 @@ public class AbstractClient<T> {
 	public AbstractClient(String url, Class<T> clazz, String user,
 			String password) {
 
-		List<AbstractJAXBProvider<T>> providers = new LinkedList<AbstractJAXBProvider<T>>();
-		providers.add(new JSONProvider<T>());
+		List<Object> providers = new LinkedList<Object>();
+		providers.add(new JacksonJaxbJsonProvider());
+		providers.add(new ClientErrorHandler());
+		
 		service = JAXRSClientFactory.create(url, clazz, providers, false);
 		authHeader = "Basic "
 				+ org.apache.cxf.common.util.Base64Utility

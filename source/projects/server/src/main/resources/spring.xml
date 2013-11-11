@@ -2,11 +2,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans.xsd
            http://cxf.apache.org/jaxrs
-		   http://cxf.apache.org/schemas/jaxrs.xsd">
+		   http://cxf.apache.org/schemas/jaxrs.xsd
+		   http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
+	<context:annotation-config/>
+	
 	<!-- JAX-RS server -->
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-extension-http.xml" /> 
@@ -20,6 +25,7 @@
 		<property name="providers">
 			<list>
 				<bean class="org.apache.cxf.jaxrs.provider.json.JSONProvider" />				
+				<bean class="fmi.uni.grading.shared.exceptions.handlers.server.ServerExceptionHandler" />
 			</list>
 		</property>
 	</bean>

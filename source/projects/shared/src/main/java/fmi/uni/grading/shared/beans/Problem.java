@@ -2,6 +2,7 @@ package fmi.uni.grading.shared.beans;
 
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.data.annotation.Id;
@@ -15,7 +16,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @XmlRootElement(name = "problem")
 @Document(collection = "problems")
-@TypeAlias("problem") // stored in the '_class' attribute instead of the class FQDN \
+@TypeAlias("problem")
+// stored in the '_class' attribute instead of the class FQDN \
 public class Problem {
 
 	@Id
@@ -45,17 +47,18 @@ public class Problem {
 	//
 	// private List<String> tests;
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	/**
 	 * Retrieves the problem ID once the problem is persisted in the repository.
 	 * 
 	 * @return The problem ID.
 	 */
+	@XmlElement(name = "id")
 	public String getId() {
 		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	/**
@@ -68,6 +71,7 @@ public class Problem {
 	 * 
 	 * @return The type of the problem.
 	 */
+	@XmlElement(name = "type")
 	public String getType() {
 		return type;
 	}
@@ -85,6 +89,7 @@ public class Problem {
 	/**
 	 * @return The title of the problem.
 	 */
+	@XmlElement(name = "title")
 	public String getTitle() {
 		return title;
 	}
@@ -102,6 +107,7 @@ public class Problem {
 	/**
 	 * @return The problem description with (possibly) HTML markup for display.
 	 */
+	@XmlElement(name = "description")
 	public String getDescription() {
 		return description;
 	}
@@ -119,6 +125,7 @@ public class Problem {
 	/**
 	 * @return The time limit for the problem in milliseconds.
 	 */
+	@XmlElement(name = "time_limit")
 	public Long getTimeLimit() {
 		return timeLimit;
 	}
@@ -136,6 +143,7 @@ public class Problem {
 	/**
 	 * @return The memory limit for the problem in milliseconds.
 	 */
+	@XmlElement(name = "memory_limit")
 	public Long getMemoryLimit() {
 		return memoryLimit;
 	}
@@ -153,6 +161,7 @@ public class Problem {
 	/**
 	 * @return The origin of the problem.
 	 */
+	@XmlElement(name = "origin")
 	public String getOrigin() {
 		return origin;
 	}
@@ -171,6 +180,7 @@ public class Problem {
 	/**
 	 * @return The problem' categories (e.g. "graphs", "dynamic programming").
 	 */
+	@XmlElement(name = "categories")
 	public List<String> getCategories() {
 		return categories;
 	}
@@ -186,6 +196,7 @@ public class Problem {
 	/**
 	 * @return Retrieves the problem's authors.
 	 */
+	@XmlElement(name = "authors")
 	public List<String> getAuthors() {
 		return authors;
 	}

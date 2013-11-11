@@ -1,0 +1,53 @@
+// Retrieve available top level problem category IDs:
+GET http://<server_host>:<server_port>/categories
+// Retrieve available child category IDs:
+GET http://<server_host>:<server_port>/categories/{id}/categories
+// Retrieve category:
+GET http://<server_host>:<server_port>/categories/{id}
+// Create a category:
+PUT http://<server_host>:<server_port>/categoriesserver_host
+// Edit a category:
+POST http://<server_host>:<server_port>/categories/{id}
+// Delete a category:
+DELETE http://<server_host>:<server_port>/categories/{id}
+// Retrieve all problems in the specified category
+GET http://<server_host>:<server_port>/categories/{id}/problems
+// Retrieve all articles in the specified category
+GET http://<server_host>:<server_port>/categories/{id}/articles
+// Retrieve all problems (at least one category must be provided as a query parameter):
+GET http://<server_host>:<server_port>/problems
+// Additional request parameters:
+	// type – problem type used to filters the retrieved problems 
+	// categories – comma-separated list of categories used to filter the problems
+	// authors – comma-separated list of authors used to filter the problems
+
+// Retrieve a particular problem:
+GET http://<server_host>:<server_port>/problems/{id}
+
+// Create a problem:
+PUT http://<server_host>:<server_port>/problems
+
+// Edit a problem:
+POST http://<server_host>:<server_port>/problems
+
+// Delete a problem:
+DELETE http://<server_host>:<server_port>/problems/{id}
+
+// Retrieve all articles (at least one category must be provided as a query parameter):
+GET http://<server_host>:<server_port>/articles
+// Additional request parameters:
+// format – format of the articles
+// categories – comma-separated list of categories used to filter the problems
+// authors – comma-separated list of authors used to filter the problems
+
+//Retrieve a particular article:
+GET http://<server_host>:<server_port>/articles/{id}
+
+// Create an article:
+PUT http://<server_host>:<server_port>/articles
+
+// Edit an article:
+POST http://<server_host>:<server_port>/articles
+
+// Delete an article:
+DELETE http://<server_host>:<server_port>/articles/{id}

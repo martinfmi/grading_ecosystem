@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- this is the main configuration file of the server -->
 <server>
-	<!-- MASTER/SLAVE -->
-	<type>MASTER</type>
 	<!-- Server port -->	
 	<port>6607</port>
 	<!-- Authentication type - allowed options are:
@@ -14,7 +12,7 @@
 	
 	<!-- specifies the database (MondoDB replica) -->
 	<mongoReplica>
-		<db>Grading_System</db>
+		<db>Grading_System_Server</db>
 		<instance>
 			<host>127.0.0.1</host>
 			<port>27017</port>

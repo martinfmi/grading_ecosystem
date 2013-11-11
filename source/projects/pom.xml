@@ -10,9 +10,10 @@
 
 	<properties>
 		<spring.version>3.2.3.RELEASE</spring.version>
-		<cxf.version>2.7.6</cxf.version>
+		<cxf.version>2.7.5</cxf.version>
 		<jaxb.version>2.1.13</jaxb.version>
 		<grading.shared>1.0.0</grading.shared>
+		<grading.server.shared>1.0.0</grading.server.shared>
 		<jetty.version>8.1.10.v20130312</jetty.version>
 	</properties>
 
@@ -94,6 +95,11 @@
 				<groupId>fmi.uni.grading</groupId>
 				<artifactId>shared</artifactId>
 				<version>${grading.shared}</version>
+			</dependency>
+			<dependency>
+				<groupId>fmi.uni.grading</groupId>
+				<artifactId>server-shared</artifactId>
+				<version>${grading.server.shared}</version>
 			</dependency>
 
 		</dependencies>

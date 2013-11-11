@@ -40,8 +40,8 @@ public class Server {
 
 	public static void main(String[] args) {
 
-		LOGGER.info("Starting Server ... ");
-
+		LOGGER.info("Starting server ... ");
+		
 		Configuration configuration = readConfiguration();
 
 		if (configuration == null) {
@@ -97,7 +97,7 @@ public class Server {
 
 		LOGGER.info("Instance type is MASTER.");
 
-		CacheUtil.init(configuration);
+		ServerCache.init(configuration);
 
 		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
 				FILE_CONTEXT);

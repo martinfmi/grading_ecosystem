@@ -81,7 +81,7 @@
 		</dependency>
 		<dependency>
 			<groupId>fmi.uni.grading</groupId>
-			<artifactId>shared</artifactId>
+			<artifactId>server-shared</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>

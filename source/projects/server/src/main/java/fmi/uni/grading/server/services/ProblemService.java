@@ -11,9 +11,9 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 
-import fmi.uni.grading.server.db.ProblemDAO;
+import fmi.uni.grading.repository.db.ProblemDAO;
 import fmi.uni.grading.shared.beans.Problem;
-import fmi.uni.grading.shared.services.IProblemService;
+import fmi.uni.grading.shared.services.server.IProblemService;
 
 public class ProblemService implements IProblemService {
 
@@ -21,7 +21,7 @@ public class ProblemService implements IProblemService {
 			.getName());
 
 	@Context
-	UriInfo uriInfo;
+	private UriInfo uriInfo;
 
 	public List<Problem> getProblems() {
 
