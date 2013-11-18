@@ -2,6 +2,7 @@ package fmi.uni.grading.shared.beans;
 
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.data.annotation.Id;
@@ -24,8 +25,18 @@ public class Tutorial {
 
 	private String name;
 
-	private List<TutorialEntry> content;
+	private List<TutorialEntry> entries;
+	
+	@XmlElement(name = "id")
+	public String getId() {
+		return id;
+	}
 
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	@XmlElement(name="name")
 	public String getName() {
 		return name;
 	}
@@ -38,11 +49,12 @@ public class Tutorial {
 	 * @return The content of the tutorial (list of {@link TutorialEntry}
 	 *         instances)
 	 */
-	public List<TutorialEntry> getContent() {
-		return content;
+	@XmlElement(name="entries")
+	public List<TutorialEntry> getEntries() {
+		return entries;
 	}
 
-	public void setContent(List<TutorialEntry> content) {
-		this.content = content;
+	public void setEntries(List<TutorialEntry> entries) {
+		this.entries = entries;
 	}
 }

@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.mongodb.Mongo;
 import com.mongodb.ServerAddress;
+import com.mongodb.WriteConcern;
 
 import fmi.uni.grading.repository.configuration.Configuration;
 import fmi.uni.grading.repository.configuration.MongoInstance;
@@ -52,6 +53,7 @@ public class RepositoryCache {
 		RepositoryCache.replica = new Mongo(mongoReplica);
 		RepositoryCache.mongoTemplate = new MongoTemplate(replica,
 				configuration.getDbName());
+		mongoTemplate.setWriteConcern(WriteConcern.SAFE);
 	}
 
 	public static Mongo getReplica() {

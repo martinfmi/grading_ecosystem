@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -23,6 +24,7 @@ public class Article {
 	@Id
 	private String id;
 
+	@Indexed(unique = true)
 	private String title;
 
 	private String format;
@@ -33,7 +35,7 @@ public class Article {
 
 	private List<String> categories;
 
-	private boolean isVisible = true;
+	private Boolean visible;
 
 	private String ref;
 
@@ -135,16 +137,16 @@ public class Article {
 	 *         Defaults to <b>true</b> if not explicitly set.
 	 */
 	@XmlElement(name = "visible")
-	public boolean isVisible() {
-		return isVisible;
+	public Boolean isVisible() {
+		return visible;
 	}
 
 	/**
 	 * @param isVisible
 	 *            The visibility status of the article
 	 */
-	public void setVisible(boolean isVisible) {
-		this.isVisible = isVisible;
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 
 	/**

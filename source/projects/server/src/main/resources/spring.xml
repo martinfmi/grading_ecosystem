@@ -17,10 +17,17 @@
 	<import resource="classpath:META-INF/cxf/cxf-extension-http.xml" /> 
     <import resource="classpath:META-INF/cxf/cxf-extension-http-jetty.xml" /> 
 	
+	<!-- cache -->
+	<bean id="mongoTemplate" class="fmi.uni.grading.server.ServerCache" factory-method="getMongoTemplate" />
+	
 	<!-- JAX-RS server -->
 	<bean id="jaxrsServer" class="org.apache.cxf.jaxrs.JAXRSServerFactoryBean">
 		<property name="serviceBeans">
-			<ref bean="problemService" />
+			<list>
+				<ref bean="graderService" />
+				<ref bean="tutorialService" />
+				<ref bean="userService" />
+			</list>
 		</property>
 		<property name="providers">
 			<list>
@@ -29,8 +36,16 @@
 			</list>
 		</property>
 	</bean>
-	 
-  <bean id="problemService" class="fmi.uni.grading.server.services.ProblemService" />
+		
+	<!-- services -->
+	<bean id="graderService" class="fmi.uni.grading.server.services.GraderService" />
+	<bean id="tutorialService" class="fmi.uni.grading.server.services.TutorialService" />
+	<bean id="userService" class="fmi.uni.grading.server.shared.services.UserService" />
+
+	<!-- DAOs -->
+	<bean id="userDAO" class="fmi.uni.grading.server.shared.db.UserDAO" />
+  	<bean id="graderDAO" class="fmi.uni.grading.server.db.GraderDAO" />
+  	<bean id="tutorialDAO" class="fmi.uni.grading.server.db.TutorialDAO" />
 	
 <!-- 	 <mongo:mongo host="localhost" port="27017"/> -->
   

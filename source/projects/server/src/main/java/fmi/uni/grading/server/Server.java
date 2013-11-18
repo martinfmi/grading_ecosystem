@@ -1,16 +1,15 @@
 package fmi.uni.grading.server;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.cxf.Bus;
-import org.apache.cxf.BusFactory;
-import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
@@ -18,6 +17,8 @@ import org.apache.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import fmi.uni.grading.server.configuration.Configuration;
+import fmi.uni.grading.server.grader.Grader;
+import fmi.uni.grading.shared.beans.GraderInstance;
 import fmi.uni.grading.shared.util.JaxbManager;
 
 /**
@@ -41,64 +42,30 @@ public class Server {
 	public static void main(String[] args) {
 
 		LOGGER.info("Starting server ... ");
-		
+
 		Configuration configuration = readConfiguration();
 
 		if (configuration == null) {
 			LOGGER.info("Failed to retrieve server configuration. Stopping execution.");
 		} else {
-			String serverType = configuration.getServerType();
-			if (Configuration.TYPE_MASTER.equalsIgnoreCase(serverType)) {
-				startMaster(configuration);
-			} else if (Configuration.TYPE_SLAVE.equalsIgnoreCase(serverType)) {
-				startSlave(configuration);
-			} else {
-				LOGGER.info("Unknown server type. Stopping execution ...");
-			}
+			startMaster(configuration);
 		}
 
 		LOGGER.info("Server stopped.");
 	}
 
-	private static void startSlave(Configuration configuration) {
-
-		LOGGER.info("Instance type is SLAVE.");
-
-		SpringBusFactory bf = new SpringBusFactory();
-		URL busFile = Server.class.getResource("/" + FILE_CONTEXT);
-		Bus bus = bf.createBus(busFile.toString());
-
-		BusFactory.setDefaultBus(bus);
-
-		// CapitalizeService implementor = new CapitalizeService();
-		
-		// WSDL is at http://localhost:9000/ws?wsdl
-		String address = "http://localhost:9000/ws";
-		// EndpointImpl endpoint = (EndpointImpl) Endpoint.publish(address,
-		// implementor);
-		
-		// endpoint.getServer().getEndpoint().getInInterceptors()
-		// .add(new LoggingInInterceptor());
-		// endpoint.getServer().getEndpoint().getOutInterceptors()
-		// .add(new LoggingOutInterceptor());
-
-		// RMOutInterceptor rmOut = new RMOutInterceptor();
-		// RMInInterceptor rmIn = new RMInInterceptor();
-		// RMSoapInterceptor soapInterceptor = new RMSoapInterceptor();
-		//
-		// System.out.println("Server ready...");
-		//
-		// Thread.sleep(5 * 60 * 1000);
-		// System.out.println("Server exiting");
-		// System.exit(0);
-	}
-
 	private static void startMaster(Configuration configuration) {
 
-		LOGGER.info("Instance type is MASTER.");
-
+		LOGGER.info("Configuring server ... ");
 		ServerCache.init(configuration);
 
+		LOGGER.info("Loading applications ... ");
+		loadApplications();
+
+		LOGGER.info("Setting up grader instances from configuration ...");
+		loadGraderInstances();
+		
+		LOGGER.info("Setting up services ... ");
 		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
 				FILE_CONTEXT);
 		// starting the server - the 'create' method is invoked as an init
@@ -114,7 +81,7 @@ public class Server {
 			server.getBus().getOutInterceptors()
 					.add(new LoggingOutInterceptor());
 		}
-		
+
 		server.create();
 
 		try {
@@ -125,32 +92,92 @@ public class Server {
 		} finally {
 			ctx.close();
 		}
+	}
 
-		// Bus bus = bf.createBus(busFile.toString());
-		//
-		// BusFactory.setDefaultBus(bus);
+	private static void loadGraderInstances() {
+		List<GraderInstance> instances = ServerCache.getConfiguration()
+				.getGraderInstances();
+		for (GraderInstance instance : instances) {
+			if (ServerCache.getGraderType(instance.getType()) == null) {
+				throw new ServerError(
+						"No grader with type: "
+								+ instance.getType()
+								+ " is present in system."
+								+ "Please check the grader instances in the configuration.");
+			}
 
-		// CapitalizeService implementor = new CapitalizeService();
+			if (instance.getId() == null) {
+				throw new ServerError(
+						"No grader instance id provided. Please check your configuration.");
+			}
 
-		// WSDL is at http://localhost:9000/ws?wsdl
-		String address = "http://localhost:9000/ws";
-		// EndpointImpl endpoint = (EndpointImpl) Endpoint.publish(address,
-		// implementor);
+			if (instance.getName() == null) {
+				throw new ServerError(
+						"No grader name provided. Please check your configuration.");
+			}
 
-		// endpoint.getServer().getEndpoint().getInInterceptors()
-		// .add(new LoggingInInterceptor());
-		// endpoint.getServer().getEndpoint().getOutInterceptors()
-		// .add(new LoggingOutInterceptor());
+			if (instance.getUrl() == null) {
+				throw new ServerError(
+						"No grader URL. Please check your configuration.");
+			}
 
-		// RMOutInterceptor rmOut = new RMOutInterceptor();
-		// RMInInterceptor rmIn = new RMInInterceptor();
-		// RMSoapInterceptor soapInterceptor = new RMSoapInterceptor();
-		//
-		// System.out.println("Server ready...");
-		//
-		// Thread.sleep(5 * 60 * 1000);
-		// System.out.println("Server exiting");
-		// System.exit(0);
+			ServerCache.addGraderInstance(instance);
+		}
+	}
+
+	private static void loadApplications() {
+
+		URL appsDir = Server.class.getResource("/" + Configuration.APPS_DIR);
+		if (appsDir == null) {
+			throw new ServerError("No " + Configuration.APPS_DIR
+					+ " directory found in the server root.");
+		}
+
+		File file;
+		try {
+			file = new File(appsDir.toURI());
+		} catch (URISyntaxException e) {
+			throw new ServerError(e);
+		}
+		if (!file.isDirectory()) {
+			throw new ServerError(Configuration.APPS_DIR
+					+ " is not a directory.");
+		}
+
+		File[] apps = file.listFiles();
+		for (File app : apps) {
+			AppClassLoader loader = null;
+			URL appUrl = null;
+			try {
+				appUrl = app.toURI().toURL();
+				loader = new AppClassLoader(app.toURI().toURL());
+				Grader grader = loader.loadGrader();
+				if (grader.getGraderType() == null) {
+					throw new ServerError(
+							"Grader type must not be null for app at URL: "
+									+ appUrl.toString());
+				}
+
+				ServerCache.addGraderType(grader.getGraderType(), grader);
+
+			} catch (MalformedURLException e) {
+				throw new ServerError(
+						"Failed to retrieve URL from app file with name: "
+								+ file.getName());
+			} finally {
+				if (loader != null) {
+					try {
+						loader.close();
+					} catch (IOException e) {
+						throw new ServerError(
+								"Failed to close app classloader for application with URL: "
+										+ appUrl.toString());
+					}
+				}
+			}
+
+		}
+
 	}
 
 	private static Configuration readConfiguration() {
@@ -166,7 +193,7 @@ public class Server {
 		} catch (JAXBException e) {
 			LOGGER.error("Failed to parse server configuration file.", e);
 		}
-
+		
 		return configuration;
 	}
 }

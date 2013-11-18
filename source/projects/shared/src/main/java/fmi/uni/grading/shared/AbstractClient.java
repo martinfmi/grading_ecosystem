@@ -3,14 +3,15 @@ package fmi.uni.grading.shared;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxrs.client.Client;
 import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.jaxrs.provider.AbstractJAXBProvider;
-import org.apache.cxf.jaxrs.provider.json.JSONProvider;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
 
@@ -53,20 +54,25 @@ public class AbstractClient<T> {
 		List<Object> providers = new LinkedList<Object>();
 		providers.add(new JacksonJaxbJsonProvider());
 		providers.add(new ClientErrorHandler());
-		
+
 		service = JAXRSClientFactory.create(url, clazz, providers, false);
 		authHeader = "Basic "
 				+ org.apache.cxf.common.util.Base64Utility
-				.encode((user + ":" + password).getBytes());
+						.encode((user + ":" + password).getBytes());
 
 		Client client = WebClient.client(service);
 		client.header("Authorization", authHeader);
-		// must be explicitly set or otherwise defaults to keep-alive
-		client.header("connection", "close");
+		// must be explicitly set or otherwise defaults to close
+		client.header("connection", "keep-alive");
+
+		ClientConfiguration config = WebClient.getConfig(service);
+		HTTPConduit conduit = (HTTPConduit) config.getConduit();
+		HTTPClientPolicy policy = conduit.getClient();
+		policy.setConnectionTimeout(0);
+		policy.setReceiveTimeout(0);
+		conduit.setClient(policy);
 		
 		if (LOGGER.isDebugEnabled()) {
-			ClientConfiguration config = WebClient.getConfig(client);
-			
 			config.getOutInterceptors().add(new LoggingOutInterceptor());
 			config.getInInterceptors().add(new LoggingInInterceptor());
 		}

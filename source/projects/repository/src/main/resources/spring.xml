@@ -17,7 +17,9 @@
 	<import resource="classpath:META-INF/cxf/cxf-extension-http.xml" /> 
     <import resource="classpath:META-INF/cxf/cxf-extension-http-jetty.xml" /> 
 	
-	<!-- JAX-RS server -->
+	<!-- cache -->
+	<bean id="mongoTemplate" class="fmi.uni.grading.repository.RepositoryCache" factory-method="getMongoTemplate" />
+		
 	<bean id="jaxrsServer" class="org.apache.cxf.jaxrs.JAXRSServerFactoryBean">
 		<property name="serviceBeans">
 			<list>
@@ -37,10 +39,10 @@
 
 <!-- services -->
 	 
-  <bean id="articleService" class="fmi.uni.grading.repository.services.ArticleService" />
-  <bean id="categoryService" class="fmi.uni.grading.repository.services.CategoryService" />
-  <bean id="problemService" class="fmi.uni.grading.repository.services.ProblemService" />
-  <bean id="userService" class="fmi.uni.grading.server.shared.services.UserService" />
+  	<bean id="articleService" class="fmi.uni.grading.repository.services.ArticleService" />
+	<bean id="categoryService" class="fmi.uni.grading.repository.services.CategoryService" />
+  	<bean id="problemService" class="fmi.uni.grading.repository.services.ProblemService" />
+	<bean id="userService" class="fmi.uni.grading.server.shared.services.UserService" />
 
 <!-- DAOs -->
 

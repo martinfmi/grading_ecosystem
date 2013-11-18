@@ -4,11 +4,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * Represents an article.
+ * Represents a tutorial entry.
  * 
+ * @see Tutorial
  * @author Martin Toshev
  */
-@XmlType(name = "tutorial_entry")
+@XmlType(name = "tutorialEntry")
 // stored in the '_class' attribute instead of the class FQDN \
 public class TutorialEntry {
 
@@ -20,7 +21,9 @@ public class TutorialEntry {
 
 	private String ref;
 
-	private String graderInstanceId;
+	private String name;
+
+	private String location;
 
 	/**
 	 * @return The type of the tutorial entry.
@@ -46,7 +49,7 @@ public class TutorialEntry {
 	 *         is the id of the problem in the specified grader instance.
 	 * 
 	 */
-	@XmlElement(name="ref")
+	@XmlElement(name = "ref")
 	public String getRef() {
 		return ref;
 	}
@@ -61,20 +64,40 @@ public class TutorialEntry {
 	}
 
 	/**
-	 * @return The grader instance that provides the data for the tutorial
-	 *         entry. Applies only for entries of type {@link EntryType#PROBLEM}
+	 * @return The name of the tutorial entry ('title' for articles and 'name'
+	 *         for problems)
 	 */
-	@XmlElement(name="grader_instance_id")
-	public String getGraderInstanceId() {
-		return graderInstanceId;
+	public String getName() {
+		return name;
 	}
 
 	/**
-	 * @param graderInstanceId
-	 *            The grader instance ID
+	 * @param name
+	 *            The tutorial entry name
+	 * @see TutorialEntry#getName()
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * @return The location that provides the data for the tutorial entry. For
+	 *         entries of type {@link EntryType#PROBLEM} this is the grader
+	 *         instance id where the problem resides and for entries of type
+	 *         {@link EntryType#ARTICLE} this is the repository where the
+	 *         articles resides.
+	 */
+	@XmlElement(name = "location")
+	public String getLocation() {
+		return location;
+	}
+
+	/**
+	 * @param location
+	 *            The location of the tutorial entry
 	 * @see TutorialEntry#getGraderInstanceId()
 	 */
-	public void setGraderInstanceId(String graderInstanceId) {
-		this.graderInstanceId = graderInstanceId;
+	public void setLocation(String location) {
+		this.location = location;
 	}
 }

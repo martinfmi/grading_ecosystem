@@ -1,0 +1,18 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>fmi.uni.grading</groupId>
+	<artifactId>build-maycamp-bridge</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+	<name>build-maycamp-bridge</name>
+	<description>Builds the maycamp bridge</description>
+
+	<modules>
+		<module>../../projects/shared</module>
+		<module>../../projects/server-shared</module>
+		<module>../../projects/server</module>
+		<module>../../projects/maycamp_arena-bridge-bridge</module>
+	</modules>
+	
+</project>

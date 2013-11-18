@@ -10,14 +10,33 @@
 	<!-- specifies the root path (relative to the server address) for the web services -->
 	<serverRoot>services</serverRoot>
 	
+	<!-- specifies the database name -->
+	<dbName>Grading_System_Server</dbName>
+
 	<!-- specifies the database (MondoDB replica) -->
 	<mongoReplica>
-		<db>Grading_System_Server</db>
 		<instance>
 			<host>127.0.0.1</host>
 			<port>27017</port>
 		</instance>
 	</mongoReplica>
+	
+	<graderInstances>
+		<instance> 
+			<id>system_spoj0_judge_openfmi_net</id>
+			<url>127.0.0.1</url>
+			<type>spoj0</type>
+			<name>spoj0_judge_openfmi_net</name>
+			<adminEnabled>1</adminEnabled>
+		</instance>
+		<!-- <instance> 
+			<id>system_maycamp_judge_openfmi_net</id>
+			<url>127.0.0.1</url>
+			<type>maycamp</type>
+			<name>maycamp_judge_openfmi_net</name>
+			<adminEnabled>1</adminEnabled>
+		</instance> -->
+	</graderInstances>
 	
 <!-- TODO: 	allowUserRegistration flag in order to allow users to register themselves or not to the system -->
 

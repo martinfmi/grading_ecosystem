@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>fmi.uni.grading</groupId>
+	<artifactId>build-all</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+	<name>build-all</name>
+	<description>Builds all projects</description>
+
+	<modules>
+		<module>../projects/shared</module>
+		<module>../projects/server-shared</module>
+		<module>../projects/repository</module>
+		<module>../projects/server</module>
+		<module>../projects/admin</module>
+		<module>../projects/eclipse/plugin</module>
+		<module>../projects/eclipse/feature</module>
+		<module>../projects/eclipse/site</module>
+		<module>../projects/spoj0-bridge</module>
+		<module>../projects/maycamp_arena-bridge-bridge</module>
+		<module>../projects/installer</module>
+	</modules>
+
+</project>

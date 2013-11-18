@@ -21,6 +21,16 @@ import org.springframework.data.mongodb.core.mapping.Document;
 // stored in the '_class' attribute instead of the class FQDN \
 public class Series {
 
+	/**
+	 * Default root series
+	 */
+	public static final Series ROOT = new Series();
+	static {
+		ROOT.setId("_ROOT_");
+		ROOT.setTitle("ROOT");
+		ROOT.setAbout("System default series");
+	}
+
 	@Id
 	private String id;
 

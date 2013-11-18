@@ -1,0 +1,3 @@
+db.articles.ensureIndex( { "title": 1 }, { unique: true } )
+db.categories.ensureIndex({ "name": 1 }, { unique: true })
+db.problems.ensureIndex({ "title": 1 }, { unique: true })

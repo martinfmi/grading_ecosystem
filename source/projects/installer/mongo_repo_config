@@ -1,0 +1,2 @@
+db.tutorials.ensureIndex( { "name": 1 }, { unique: true } )
+db.grader_instances.ensureIndex({ "name": 1 }, { unique: true })

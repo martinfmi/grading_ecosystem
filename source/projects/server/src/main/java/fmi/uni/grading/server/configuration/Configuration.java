@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import fmi.uni.grading.shared.beans.GraderInstance;
+
 /**
  * Configuration bean for storing the various configurable server properties (as
  * specified in the server configuration file).
@@ -17,6 +19,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "server")
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class Configuration {
+
+	public static final String APPS_DIR = "apps";
 
 	public static final String AUTH_TYPE_BASIC = "Basic";
 
@@ -29,6 +33,8 @@ public class Configuration {
 	private String dbName = "Grading_System";
 
 	private List<MongoInstance> mongoInstances;
+
+	private List<GraderInstance> graderInstances;
 
 	public void setPort(int port) {
 		this.port = port;
@@ -74,5 +80,15 @@ public class Configuration {
 
 	public void setMongoInstances(List<MongoInstance> mongoInstances) {
 		this.mongoInstances = mongoInstances;
+	}
+
+	@XmlElementWrapper(name = "graderInstances")
+	@XmlElement(name = "instance")
+	public List<GraderInstance> getGraderInstances() {
+		return graderInstances;
+	}
+
+	public void setGraderInstances(List<GraderInstance> graderInstances) {
+		this.graderInstances = graderInstances;
 	}
 }

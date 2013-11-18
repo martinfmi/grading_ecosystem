@@ -25,7 +25,7 @@ import fmi.uni.grading.shared.exceptions.AbstractServerException;
  */
 @Path("categories")
 public interface ICategoryService {
-
+	
 	/**
 	 * Retrieves the top-level categories in the repository
 	 * 

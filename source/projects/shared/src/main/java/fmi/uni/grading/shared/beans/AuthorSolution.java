@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * 
  * @author Martin Toshev
  */
-@XmlRootElement(name = "author_solution")
+@XmlRootElement(name = "authorSolution")
 @Document(collection = "author_solutions")
 @TypeAlias("author_solution")
 // stored in the '_class' attribute instead of the class FQDN \

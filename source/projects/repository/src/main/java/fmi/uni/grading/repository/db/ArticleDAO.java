@@ -2,21 +2,25 @@ package fmi.uni.grading.repository.db;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import fmi.uni.grading.repository.RepositoryCache;
 import fmi.uni.grading.shared.beans.Article;
-import fmi.uni.grading.shared.beans.Problem;
+import fmi.uni.grading.shared.exceptions.MissingResourceException;
 
 public class ArticleDAO {
 
-	public List<Article> getArticles() {
+	@Autowired
+	private CategoryDAO categoryDAO;
 
+	public List<Article> getArticles() {
 		MongoTemplate mongoTemplate = RepositoryCache.getMongoTemplate();
-		List<Article> articles = mongoTemplate.findAll(Article.class);
+		Query query = new Query();
+		query.fields().include("id").include("title");
+		List<Article> articles = mongoTemplate.find(query, Article.class);
 		return articles;
 	}
 
@@ -28,33 +32,39 @@ public class ArticleDAO {
 	}
 
 	public Article createArticle(Article article) {
+		checkForMissingCategory(article);
+
 		MongoTemplate mongoTemplate = RepositoryCache.getMongoTemplate();
 		mongoTemplate.insert(article);
 
-		Query query = new Query(Criteria.where("title").is(article.getTitle()));
-		Article insertedArticle = mongoTemplate.findOne(query, Article.class);
-		return insertedArticle;
+		return article;
 	}
 
 	public Article editArticle(Article article) {
-		MongoOperations mongoOps = new MongoTemplate(
-				RepositoryCache.getReplica(), RepositoryCache
-						.getConfiguration().getDbName());
-		
-		Query searchUserQuery = new Query(Criteria.where("id").is(article.getId()));
-		return null;
-		// mongoOperation.updateFirst(searchUserQuery,
-		// Update.update("password", "new password"),User.class);
+		checkForMissingCategory(article);
 
-		// mongoOps.updateFirst(arg0, arg1, ProblemBean.class);
+		MongoTemplate mongoTemplate = RepositoryCache.getMongoTemplate();
+		mongoTemplate.save(article);
+
+		return article;
 	}
 
-	public void deleteProblem(String id) {
-		MongoOperations mongoOps = new MongoTemplate(
-				RepositoryCache.getReplica(), RepositoryCache
-						.getConfiguration().getDbName());
+	public void deleteArticle(String id) {
+		MongoTemplate mongoTemplate = RepositoryCache.getMongoTemplate();
 
 		Query query = new Query(Criteria.where("id").is(id));
-		mongoOps.remove(query, Problem.class);
+		mongoTemplate.remove(query, Article.class);
+	}
+
+	private void checkForMissingCategory(Article article) {
+		if (article.getCategories() != null) {
+			for (String category : article.getCategories()) {
+				if (categoryDAO.getCategoryByName(category) == null) {
+					throw new MissingResourceException(String.format(
+							"No category with name '%s' found in repository.",
+							category));
+				}
+			}
+		}
 	}
 }

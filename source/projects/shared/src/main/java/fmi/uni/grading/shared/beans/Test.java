@@ -14,7 +14,7 @@ public class Test {
 
 	@Id
 	private String id;
-
+	
 	private String problemId;
 
 	private String weight;

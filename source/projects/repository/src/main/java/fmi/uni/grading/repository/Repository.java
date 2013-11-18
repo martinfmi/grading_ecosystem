@@ -21,7 +21,7 @@ import fmi.uni.grading.shared.util.JaxbManager;
  * @author Martin Toshev
  */
 public class Repository {
-
+	
 	private static final String BEAN_ID_JAXRS_SERVER = "jaxrsServer";
 
 	private static String FILE_CONTEXT = "spring.xml";
@@ -38,22 +38,23 @@ public class Repository {
 		LOGGER.info("Starting repository ... ");
 
 		Configuration configuration = readConfiguration();
-		
+
 		if (configuration == null) {
 			LOGGER.info("Failed to retrieve repository configuration. Stopping execution.");
 		} else {
-				startRepository(configuration);
+			startRepository(configuration);
 		}
 
 		LOGGER.info("Repository stopped.");
 	}
-	
+
 	private static void startRepository(Configuration configuration) {
 
 		RepositoryCache.init(configuration);
-
+		
 		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
 				FILE_CONTEXT);
+		
 		// starting the repository - the 'create' method is invoked as an init
 		// method in the spring
 		// configuration
@@ -61,13 +62,13 @@ public class Repository {
 				.getBean(BEAN_ID_JAXRS_SERVER);
 		repository.setAddress(LOCALHOST + ":" + configuration.getPort() + "/"
 				+ configuration.getRepositoryRoot());
-
 		if (LOGGER.isDebugEnabled()) {
-			repository.getBus().getInInterceptors().add(new LoggingInInterceptor());
+			repository.getBus().getInInterceptors()
+					.add(new LoggingInInterceptor());
 			repository.getBus().getOutInterceptors()
 					.add(new LoggingOutInterceptor());
 		}
-
+		
 		repository.create();
 
 		try {

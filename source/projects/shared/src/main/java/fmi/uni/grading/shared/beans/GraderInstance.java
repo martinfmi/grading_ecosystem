@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * 
  * @author Martin Toshev
  */
-@XmlRootElement(name = "grader_instance")
+@XmlRootElement(name = "graderInstance")
 @Document(collection = "grader_instances")
 @TypeAlias("grader_instance")
 // stored in the '_class' attribute instead of the class FQDN \
@@ -27,7 +27,7 @@ public class GraderInstance {
 
 	private String url;
 
-	private boolean adminEnabled;
+	private Boolean adminEnabled;
 
 	public String getId() {
 		return id;
@@ -40,6 +40,7 @@ public class GraderInstance {
 	/**
 	 * @return The type of the grader instance
 	 */
+	@XmlElement(name = "type")
 	public String getType() {
 		return type;
 	}
@@ -51,6 +52,7 @@ public class GraderInstance {
 	/**
 	 * @return The name of the grader instance.
 	 */
+	@XmlElement(name = "name")
 	public String getName() {
 		return name;
 	}
@@ -62,6 +64,7 @@ public class GraderInstance {
 	/**
 	 * @return The root URL of the grader instance
 	 */
+	@XmlElement(name = "url")
 	public String getUrl() {
 		return url;
 	}
@@ -74,12 +77,12 @@ public class GraderInstance {
 	 * @return <b>true</b> if administration for the grader instance is enabled
 	 *         and false otherwise
 	 */
-	@XmlElement(name = "administration_enabled")
-	public boolean isAdminEnabled() {
+	@XmlElement(name = "adminEnabled")
+	public Boolean isAdminEnabled() {
 		return adminEnabled;
 	}
 
-	public void setAdminEnabled(boolean adminEnabled) {
+	public void setAdminEnabled(Boolean adminEnabled) {
 		this.adminEnabled = adminEnabled;
 	}
 }

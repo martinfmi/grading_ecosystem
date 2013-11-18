@@ -6,7 +6,7 @@ package fmi.uni.grading.shared.exceptions;
  * @author Martin Toshev
  */
 public class AuthException extends AbstractServerException {
-
+	
 	private static final long serialVersionUID = 4646329689482215755L;
 
 	public static final int HTTP_CODE = 403;

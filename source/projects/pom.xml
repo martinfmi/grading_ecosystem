@@ -12,6 +12,7 @@
 		<spring.version>3.2.3.RELEASE</spring.version>
 		<cxf.version>2.7.5</cxf.version>
 		<jaxb.version>2.1.13</jaxb.version>
+		<grading.server>1.0.0</grading.server>
 		<grading.shared>1.0.0</grading.shared>
 		<grading.server.shared>1.0.0</grading.server.shared>
 		<jetty.version>8.1.10.v20130312</jetty.version>
@@ -28,7 +29,7 @@
 			<url>http://repo.springsource.org/libs-milestone</url>
 		</repository>
 	</repositories>
-	
+
 	<dependencyManagement>
 		<dependencies>
 			<!-- Spring Framework -->
@@ -91,6 +92,12 @@
 				<artifactId>jaxb-impl</artifactId>
 				<version>${jaxb.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>fmi.uni.grading</groupId>
+				<artifactId>server</artifactId>
+				<version>${grading.server}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>fmi.uni.grading</groupId>
 				<artifactId>shared</artifactId>

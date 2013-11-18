@@ -1,1 +1,0 @@
-db.articles.ensureIndex( { "title": 1 }, { unique: true } )

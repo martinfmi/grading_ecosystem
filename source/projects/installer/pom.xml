@@ -5,9 +5,7 @@
     <artifactId>parent</artifactId>
     <version>1.0.0</version>
   </parent>
-  <groupId>fmi.uni.grading</groupId>
   <artifactId>installer</artifactId>
-  <version>1.0.0</version>
   <name>Grading Ecosystem Installer</name>
   <description>Custom Installer for the Grading Ecosystem</description>
 </project>

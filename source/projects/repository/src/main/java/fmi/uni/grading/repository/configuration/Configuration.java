@@ -18,16 +18,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class Configuration {
 
-	public static final String TYPE_MASTER = "MASTER";
-
-	public static final String TYPE_SLAVE = "SLAVE";
-
 	public static final String AUTH_TYPE_BASIC = "Basic";
 
-	private String serverType = TYPE_MASTER;
-
 	private int port = 3434;
-
+	
 	private String authType = "Basic";
 
 	private String repositoryRoot = "/services";
@@ -36,15 +30,6 @@ public class Configuration {
 
 	private List<MongoInstance> mongoInstances;
 	
-	public void setServerType(String serverType) {
-		this.serverType = serverType;
-	}
-
-	@XmlElement(name = "type")
-	public String getServerType() {
-		return serverType;
-	}
-
 	public void setPort(int port) {
 		this.port = port;
 	}

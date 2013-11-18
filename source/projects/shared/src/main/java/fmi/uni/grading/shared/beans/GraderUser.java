@@ -12,11 +12,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * 
  * @author Martin Toshev
  */
-@XmlRootElement(name = "grader_user")
+@XmlRootElement(name = "graderUser")
 @Document(collection = "grader_users")
 @TypeAlias("grader_user")
 public class GraderUser {
-
+	
 	@Id
 	private String id;
 	

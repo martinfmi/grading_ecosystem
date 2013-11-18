@@ -27,9 +27,21 @@ import fmi.uni.grading.shared.exceptions.AbstractServerException;
  */
 @Path("graders")
 public interface IGraderService {
-
+	
 	/**
-	 * Retrieve all registered grader instances
+	 * Retrieve all available grader types
+	 * 
+	 * @return A list of the grader types available in the application server.
+	 * @throws AbstractServerException
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("types")
+	public List<String> getGraderTypes()
+			throws AbstractServerException;
+	
+	/**
+	 * Retrieve all registered grader instances.
 	 * 
 	 * @return A list of {@link GraderInstance} instances.
 	 * @throws AbstractServerException
@@ -50,7 +62,7 @@ public interface IGraderService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("{id}")
-	public List<GraderInstance> getGraderInstance(@PathParam("id") String id)
+	public GraderInstance getGraderInstance(@PathParam("id") String id)
 			throws AbstractServerException;
 
 	/**
@@ -335,7 +347,7 @@ public interface IGraderService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("{id}/contests/{constestId}/problems/{problemId}")
-	public List<Problem> getContestProblems(@PathParam("id") String id,
+	public List<Problem> getContestProblem(@PathParam("id") String id,
 			@PathParam("contestId") String contestId,
 			@PathParam("problemId") String problemId)
 			throws AbstractServerException;
