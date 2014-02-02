@@ -1,23 +1,21 @@
 package fmi.uni.grading.server.services;
 
+import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 
 import fmi.uni.grading.server.ServerCache;
 import fmi.uni.grading.server.ServerError;
 import fmi.uni.grading.server.db.GraderDAO;
+import fmi.uni.grading.server.grader.Grader;
+import fmi.uni.grading.server.grader.NotSupported;
 import fmi.uni.grading.shared.beans.Contest;
 import fmi.uni.grading.shared.beans.GraderInstance;
 import fmi.uni.grading.shared.beans.Problem;
@@ -25,263 +23,433 @@ import fmi.uni.grading.shared.beans.Series;
 import fmi.uni.grading.shared.beans.Submission;
 import fmi.uni.grading.shared.exceptions.AbstractServerException;
 import fmi.uni.grading.shared.exceptions.BadRequestException;
+import fmi.uni.grading.shared.exceptions.MissingResourceException;
+import fmi.uni.grading.shared.exceptions.ServerException;
 import fmi.uni.grading.shared.services.server.IGraderService;
 
 public class GraderService implements IGraderService {
-	
+
 	@Context
 	private UriInfo uriInfo;
-	
+
 	@Autowired
 	private GraderDAO graderDAO;
-	
-	public List<String> getGraderTypes() throws AbstractServerException {
-		
-		return null;
+
+	public Set<String> getGraderTypes() throws AbstractServerException {
+		Set<String> types = ServerCache.getGraderTypes();
+		return types;
 	}
-	
-	public List<GraderInstance> getGraderInstances()
+
+	public Collection<GraderInstance> getGraderInstances()
 			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+		Collection<GraderInstance> instances = ServerCache.getGraderInstances();
+		return instances;
 	}
 
 	public GraderInstance getGraderInstance(String id)
 			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+		GraderInstance instance = ServerCache.getGraderInstance(id);
+		if (instance == null) {
+			throw new MissingResourceException("No grader instance with id: "
+					+ id + " exists in system.");
+		}
+		return instance;
 	}
-	
+
 	public GraderInstance registerGraderInstance(GraderInstance instance)
 			throws AbstractServerException {
+
+		if (instance.getId() != null) {
+			throw new BadRequestException(
+					"Grader instance id must not be provided upon creation.");
+		}
+
+		checkGraderInstance(instance);
+
+		GraderInstance createdInstance = null;
 		try {
+			createdInstance = graderDAO.createGraderInstance(instance);
 			ServerCache.addGraderInstance(instance);
-		} catch(ServerError e) {
+		} catch (DataAccessException e) {
+			throw new BadRequestException(e.getMessage());
+		} catch (ServerError e) {
 			throw new BadRequestException(e.getMessage());
 		}
-		
-		return null;
+
+		return createdInstance;
 	}
 
 	public GraderInstance editGraderInstance(GraderInstance instance)
 			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	public void deleteGraderInstance(@PathParam("id") String id)
-			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		
+		if (instance.getId() == null) {
+			throw new BadRequestException("No grader instance id provided.");
+		}
+
+		checkGraderInstance(instance);
+
+		GraderInstance editedInstance = null;
+		try {
+			GraderInstance existingInstance = graderDAO
+					.getGraderInstance(instance.getId());
+			if (existingInstance == null) {
+				throw new BadRequestException("Grader instance with id: "
+						+ instance.getId()
+						+ " is either not existing or is not editable.");
+			}
+
+			editedInstance = graderDAO.editGraderInstance(instance);
+			ServerCache.updateGraderInstance(instance);
+		} catch (DataAccessException e) {
+			throw new BadRequestException(e.getMessage());
+		} catch (ServerError e) {
+			throw new BadRequestException(e.getMessage());
+		}
+
+		return editedInstance;
 	}
 
-	@GET
-	@Path("{id}/series")
-	@Produces("application/json")
-	public List<Series> getRootSeries(@PathParam("id") String id)
-			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+	public void deleteGraderInstance(String id) throws AbstractServerException {
+		try {
+			graderDAO.deleteGraderInstance(id);
+			ServerCache.removeGraderInstance(id);
+		} catch (DataAccessException ex) {
+			throw new BadRequestException(ex.getMessage());
+		}
 	}
 
-	@GET
-	@Produces("application/json")
-	@Path("{id}/series/{seriesId}/series")
-	public List<Series> getChildSeries(@PathParam("id") String id,
-			@PathParam("seriesId") String seriesId)
-			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Series> getRootSeries(String id) throws AbstractServerException {
+
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "getRootSeries", String.class)) {
+			throw new BadRequestException(
+					"Retrieval of root series is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		return grader.getRootSeries(instance.getUrl());
 	}
 
-	@GET
-	@Produces("application/json")
-	@Path("{id}/series/{seriesId}")
-	public Series getSeries(@PathParam("id") String id,
-			@PathParam("seriesId") String seriesId)
+	public List<Series> getChildSeries(String id, String seriesId)
 			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "getChildSeries", String.class, String.class)) {
+			throw new BadRequestException(
+					"Retrieval of child series is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		return grader.getChildSeries(instance.getUrl(), seriesId);
 	}
 
-	@PUT
-	@Produces("application/json")
-	@Consumes("application/json")
-	@Path("{id}/series")
-	public Series createSeries(@PathParam("id") String id, Series series)
+	public Series getSeries(String id, String seriesId)
 			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "getSeries", String.class, String.class)) {
+			throw new BadRequestException(
+					"Retrieval of series is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		return grader.getSeries(instance.getUrl(), seriesId);
 	}
 
-	@POST
-	@Produces("application/json")
-	@Consumes("application/json")
-	@Path("{id}/series")
-	public Series editSeries(@PathParam("id") String id, Series series)
+	public Series createSeries(String id, Series series)
 			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "createSeries", String.class, Series.class)) {
+			throw new BadRequestException(
+					"Creation of series is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		return grader.createSeries(instance.getUrl(), series);
 	}
 
-	@DELETE
-	@Path("{id}/series/{seriesId}")
-	public void deleteSeries(@PathParam("id") String id,
-			@PathParam("seriesId") String seriesId)
+	public Series editSeries(String id, Series series)
 			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "editSeries", String.class, Series.class)) {
+			throw new BadRequestException(
+					"Update of series is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		return grader.editSeries(instance.getUrl(), series);
 	}
 
-	@GET
-	@Produces("application/json")
-	@Path("{id}/series/{seriesId}/contests")
-	public List<Contest> getContests(@PathParam("id") String id,
-			@PathParam("seriesId") String seriesId)
+	public void deleteSeries(String id, String seriesId)
 			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "deleteSeries", String.class, String.class)) {
+			throw new BadRequestException(
+					"Deletion of series is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		grader.deleteSeries(instance.getUrl(), seriesId);
 	}
 
-	@GET
-	@Produces("application/json")
-	@Path("{id}/series/{seriesId}/contests/{contestId}")
-	public Contest getContest(@PathParam("id") String id,
-			@PathParam("seriesId") String seriesId,
-			@PathParam("contestId") String contestId)
+	public List<Contest> getContests(String id, String seriesId)
 			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "getContests", String.class, String.class)) {
+			throw new BadRequestException(
+					"Retrieval of contests is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		return grader.getContests(instance.getUrl(), seriesId);
 	}
 
-	@PUT
-	@Produces("application/json")
-	@Consumes("application/json")
-	@Path("{id}/series/{seriesId}/contests")
-	public Contest createContest(@PathParam("id") String id,
-			@PathParam("seriesId") String seriesId, Contest contest)
+	public Contest getContest(String id, String seriesId, String contestId)
 			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "getContest", String.class, String.class,
+				String.class)) {
+			throw new BadRequestException(
+					"Retrieval of contest from a series is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		return grader.getContest(instance.getUrl(), seriesId, contestId);
 	}
 
-	@POST
-	@Produces("application/json")
-	@Consumes("application/json")
-	@Path("{id}/series/{seriesId}/contests")
-	public Contest editContest(@PathParam("id") String id,
-			@PathParam("seriesId") String seriesId, Contest contest)
+	public Contest createContest(String id, String seriesId, Contest contest)
 			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "createContest", String.class, String.class,
+				Contest.class)) {
+			throw new BadRequestException(
+					"Creation of contest in a series is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		return grader.createContest(instance.getUrl(), seriesId, contest);
 	}
 
-	@DELETE
-	@Path("{id}/series/{seriesId}/contests/{contestId}")
-	public void deleteContest(@PathParam("id") String id,
-			@PathParam("seriesId") String seriesId,
-			@PathParam("contestId") String contestId)
+	public Contest editContest(String id, String seriesId, Contest contest)
 			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "editContest", String.class, String.class,
+				Contest.class)) {
+			throw new BadRequestException(
+					"Update of contest in a series is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		return grader.editContest(instance.getUrl(), seriesId, contest);
 	}
 
-	@GET
-	@Produces("application/json")
-	@Path("{id}/series/{seriesId}/problems")
-	public List<Problem> getProblems(@PathParam("id") String id,
-			@PathParam("seriesId") String seriesId)
+	public void deleteContest(String id, String seriesId, String contestId)
 			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "deleteContest", String.class, String.class,
+				String.class)) {
+			throw new BadRequestException(
+					"Deletion of contest from a series is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		grader.deleteContest(instance.getUrl(), seriesId, contestId);
 	}
 
-	@GET
-	@Produces("application/json")
-	@Path("{id}/contests/{constestId}/problems")
-	public List<Problem> getContestProblems(@PathParam("id") String id,
-			@PathParam("contestId") String contestId)
+	public List<Problem> getProblems(String id, String seriesId)
 			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "getProblems", String.class, String.class)) {
+			throw new BadRequestException(
+					"Retrieval of problems from a series is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		return grader.getProblems(instance.getUrl(), seriesId);
 	}
 
-	@GET
-	@Produces("application/json")
-	@Path("{id}/contests/{constestId}/problems/{problemId}")
-	public List<Problem> getContestProblem(@PathParam("id") String id,
-			@PathParam("contestId") String contestId,
-			@PathParam("problemId") String problemId)
+	public List<Problem> getContestProblems(String id, String contestId)
 			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "getContestProblems", String.class, String.class)) {
+			throw new BadRequestException(
+					"Retrieval of problems from a contest is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		return grader.getContestProblems(instance.getUrl(), contestId);
 	}
 
-	@PUT
-	@Produces("application/json")
-	@Consumes("application/json")
-	@Path("{id}/contests/{constestId}/problems")
-	public Problem createContestProblem(@PathParam("id") String id,
-			@PathParam("contestId") String contestId, Problem problem)
-			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+	public Problem getContestProblem(String id, String contestId,
+			String problemId) throws AbstractServerException {
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "getContestProblem", String.class, String.class,
+				String.class)) {
+			throw new BadRequestException(
+					"Retrieval of problem from a contest is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		return grader
+				.getContestProblem(instance.getUrl(), contestId, problemId);
 	}
 
-	@POST
-	@Produces("application/json")
-	@Consumes("application/json")
-	@Path("{id}/contests/{constestId}/problems")
-	public Problem editContestProblem(@PathParam("id") String id,
-			@PathParam("contestId") String contestId, Problem problem)
-			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+	public Problem createContestProblem(String id, String contestId,
+			Problem problem) throws AbstractServerException {
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "createContestProblem", String.class,
+				String.class, Problem.class)) {
+			throw new BadRequestException(
+					"Creation of problem in a contest is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		return grader.createContestProblem(instance.getUrl(), contestId,
+				problem);
 	}
 
-	@DELETE
-	@Produces("application/json")
-	@Consumes("application/json")
-	@Path("{id}/contests/{constestId}/problems/{problemId}")
-	public void deleteContestProblem(@PathParam("id") String id,
-			@PathParam("contestId") String contestId,
-			@PathParam("problemId") String problemId)
-			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		
+	public Problem editContestProblem(String id, String contestId,
+			Problem problem) throws AbstractServerException {
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "editContestProblem", String.class, String.class,
+				Problem.class)) {
+			throw new BadRequestException(
+					"Update of problem in a contest is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		return grader.editContestProblem(instance.getUrl(), contestId, problem);
 	}
 
-	@GET
-	@Produces("application/json")
-	@Path("{id}/problems/{problemId}/submissions")
-	public List<Submission> getSubmissions(@PathParam("id") String id,
-			@PathParam("problemId") String problemId)
-			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+	public void deleteContestProblem(String id, String contestId,
+			String problemId) throws AbstractServerException {
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "deleteContestProblem", String.class,
+				String.class, String.class)) {
+			throw new BadRequestException(
+					"Deletion of problem in a contest is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		grader.deleteContestProblem(instance.getUrl(), contestId, problemId);
 	}
 
-	@GET
-	@Produces("application/json")
-	@Path("{id}/problems/{problemId}/submissions/{submissionId}")
-	public Submission getSubmission(@PathParam("id") String id,
-			@PathParam("problemId") String problemId,
-			@PathParam("submissionId") String submissionId)
+	public List<Submission> getSubmissions(String id, String problemId)
 			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "getSubmissions", String.class, String.class)) {
+			throw new BadRequestException(
+					"Retrieval of problem submissions is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		return grader.getSubmissions(instance.getUrl(), problemId);
 	}
 
-	@PUT
-	@Produces("application/json")
-	@Consumes("application/json")
-	@Path("{id}/problems/{problemId}/submissions")
-	public Submission sendSubmission(@PathParam("id") String id,
-			@PathParam("problemId") String problemId, Submission submission)
-			throws AbstractServerException {
-		// TODO Auto-generated method stub
-		return null;
+	public Submission getSubmission(String id, String problemId,
+			String submissionId) throws AbstractServerException {
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "getSubmission", String.class, String.class,
+				String.class)) {
+			throw new BadRequestException(
+					"Retrieval of submission is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		return grader.getSubmission(instance.getUrl(), problemId, submissionId);
 	}
-	
-	
+
+	public Submission sendSubmission(String id, String problemId,
+			Submission submission) throws AbstractServerException {
+		GraderInstance instance = getGraderInstance(id);
+		Grader grader = ServerCache.getGrader(instance.getType());
+
+		if (!supports(grader, "sendSubmission", String.class, String.class,
+				Submission.class)) {
+			throw new BadRequestException(
+					"Sending of submission is not supported for grader of type: "
+							+ instance.getType());
+		}
+
+		return grader.sendSubmission(instance.getUrl(), problemId, submission);
+	}
+
+	private void checkGraderInstance(GraderInstance instance) {
+		if (instance.getName() == null) {
+			throw new BadRequestException("No grader instance name provided.");
+		}
+
+		if (instance.getType() == null) {
+			throw new BadRequestException(
+					"No grader type provided for grader instance.");
+		}
+
+		if (ServerCache.getGrader(instance.getType()) == null) {
+			throw new BadRequestException("No grader with type: "
+					+ instance.getType() + " is present in system."
+					+ "Please check the grader instances in the configuration.");
+		}
+
+		if (instance.getUrl() == null) {
+			throw new BadRequestException("No grader instance URL provided.");
+		}
+	}
+
+	private boolean supports(Grader grader, String methodName, Class<?>... args) {
+		boolean result = true;
+		Method method = null;
+		try {
+			method = grader.getClass().getMethod(methodName, args);
+		} catch (NoSuchMethodException e) {
+			throw new ServerException(e.getMessage());
+		} catch (SecurityException e) {
+			throw new ServerException(e.getMessage());
+		}
+
+		NotSupported notSupported = method.getAnnotation(NotSupported.class);
+		if (notSupported != null) {
+			throw new BadRequestException(
+					String.format(
+							"Method '%s' is not supported for grader instances of type '%s'.",
+							methodName, grader.getGraderType()));
+		}
+
+		return result;
+	}
 }

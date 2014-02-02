@@ -3,7 +3,6 @@ package fmi.uni.grading.shared.exceptions.handlers.client;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.client.ResponseExceptionMapper;
@@ -69,25 +68,25 @@ public class ClientErrorHandler implements
 			result = new BadRequestException(subcode, message, moreInfo);
 			break;
 		case ConflictException.HTTP_CODE:
-			result = new BadRequestException(subcode, message, moreInfo);
+			result = new ConflictException(subcode, message, moreInfo);
 			break;
 		case InvalidFormatException.HTTP_CODE:
-			result = new BadRequestException(subcode, message, moreInfo);
+			result = new InvalidFormatException(subcode, message, moreInfo);
 			break;
 		case MissingResourceException.HTTP_CODE:
-			result = new BadRequestException(subcode, message, moreInfo);
+			result = new MissingResourceException(subcode, message, moreInfo);
 			break;
 		case PreconditionFailedException.HTTP_CODE:
-			result = new BadRequestException(subcode, message, moreInfo);
+			result = new PreconditionFailedException(subcode, message, moreInfo);
 			break;
 		case RequestLimitExceededException.HTTP_CODE:
-			result = new BadRequestException(subcode, message, moreInfo);
+			result = new RequestLimitExceededException(subcode, message, moreInfo);
 			break;
 		case ServerException.HTTP_CODE:
-			result = new BadRequestException(subcode, message, moreInfo);
+			result = new ServerException(subcode, message, moreInfo);
 			break;
 		case ServerOverloadException.HTTP_CODE:
-			result = new BadRequestException(subcode, message, moreInfo);
+			result = new ServerOverloadException(subcode, message, moreInfo);
 			break;
 		default:
 			result = new ServerException(subcode, message, moreInfo);

@@ -43,6 +43,12 @@ public class ProblemService implements IProblemService {
 		} catch (DataAccessException ex) {
 			throw new BadRequestException(ex.getMessage());
 		}
+
+		if (problem == null) {
+			throw new MissingResourceException(String.format(
+					"No problem with ID '%s' found in repository.", id));
+		}
+
 		return problem;
 	}
 
@@ -108,14 +114,19 @@ public class ProblemService implements IProblemService {
 			throws AbstractServerException {
 		Test test = null;
 		try {
-			test = problemDAO.getTest(id);
+			test = problemDAO.getTest(testId);
 		} catch (DataAccessException e) {
 			throw new BadRequestException(e.getMessage());
 		}
 
-		if (id != test.getProblemId()) {
-			throw new BadRequestException(String.format(
-					"No test with ID: '%s' for problem with ID: '%s'", testId,
+		if (test == null) {
+			throw new MissingResourceException(String.format(
+					"No test with id: '%s'.", testId));
+		}
+
+		if (!id.equals(test.getProblemId())) {
+			throw new MissingResourceException(String.format(
+					"No test with ID: '%s' for problem with ID: '%s'.", testId,
 					id));
 		}
 
@@ -183,7 +194,7 @@ public class ProblemService implements IProblemService {
 						"No test with ID '%s' exists in repository.", testId));
 			}
 
-			if (test.getProblemId() != id) {
+			if (!id.equals(test.getProblemId())) {
 				throw new MissingResourceException(
 						String.format(
 								"No test with ID '%s' exists for problem with ID '%s'.",
@@ -217,8 +228,13 @@ public class ProblemService implements IProblemService {
 			throw new BadRequestException(e.getMessage());
 		}
 
-		if (id != solution.getProblemId()) {
-			throw new BadRequestException(
+		if (solution == null) {
+			throw new MissingResourceException(String.format(
+					"No author solution with id: '%s'.", solutionId));
+		}
+
+		if (!id.equals(solution.getProblemId())) {
+			throw new MissingResourceException(
 					String.format(
 							"No author solution with ID: '%s' for problem with ID: '%s'",
 							solutionId, id));
@@ -291,7 +307,7 @@ public class ProblemService implements IProblemService {
 						solutionId));
 			}
 
-			if (solution.getProblemId() != id) {
+			if (!id.equals(solution.getProblemId())) {
 				throw new MissingResourceException(
 						String.format(
 								"No solution with ID '%s' exists for problem with ID '%s'.",
@@ -303,7 +319,7 @@ public class ProblemService implements IProblemService {
 			throw new BadRequestException(ex.getMessage());
 		}
 	}
-
+	
 	public List<Checker> getCheckers(String id) throws AbstractServerException {
 		List<Checker> checkers = null;
 		try {
@@ -324,8 +340,13 @@ public class ProblemService implements IProblemService {
 			throw new BadRequestException(e.getMessage());
 		}
 
-		if (id != checker.getProblemId()) {
-			throw new BadRequestException(String.format(
+		if (checker == null) {
+			throw new MissingResourceException(String.format(
+					"No checker with id: '%s'.", checkerId));
+		}
+
+		if (!id.equals(checker.getProblemId())) {
+			throw new MissingResourceException(String.format(
 					"No checker with ID: '%s' for problem with ID: '%s'",
 					checkerId, id));
 		}
@@ -362,7 +383,7 @@ public class ProblemService implements IProblemService {
 		if (checker.getId() == null) {
 			throw new BadRequestException("No checker ID provided.");
 		}
-		
+
 		Checker editedChecker = null;
 		try {
 			Problem problem = problemDAO.getProblem(id);
@@ -385,7 +406,7 @@ public class ProblemService implements IProblemService {
 		try {
 			Problem problem = problemDAO.getProblem(id);
 			Checker checker = problemDAO.getChecker(checkerId);
-
+			
 			if (problem == null) {
 				throw new MissingResourceException(String.format(
 						"No problem with ID '%s' exists in repository.", id));
@@ -397,13 +418,13 @@ public class ProblemService implements IProblemService {
 						checkerId));
 			}
 
-			if (checker.getProblemId() != id) {
+			if (!id.equals(checker.getProblemId())) {
 				throw new MissingResourceException(
 						String.format(
 								"No checker with ID '%s' exists for problem with ID '%s'.",
 								checkerId, id));
 			}
-
+			
 			problemDAO.deleteChecker(checkerId);
 		} catch (DataAccessException ex) {
 			throw new BadRequestException(ex.getMessage());

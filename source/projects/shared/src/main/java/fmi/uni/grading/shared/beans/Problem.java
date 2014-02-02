@@ -39,14 +39,6 @@ public class Problem {
 
 	private List<String> authors;
 
-	// private List<Integer> testWeights;
-	//
-	// private String checker;
-	//
-	// private List<String> authorSolutions;
-	//
-	// private List<String> tests;
-
 	/**
 	 * Retrieves the problem ID once the problem is persisted in the repository.
 	 * 
@@ -141,7 +133,7 @@ public class Problem {
 	}
 
 	/**
-	 * @return The memory limit for the problem in milliseconds.
+	 * @return The memory limit for the problem in megabytes.
 	 */
 	@XmlElement(name = "memory_limit")
 	public Long getMemoryLimit() {
@@ -152,7 +144,7 @@ public class Problem {
 	 * Sets the memory limit of a problem.
 	 * 
 	 * @param memoryLimit
-	 *            Memory limit for the problem in milliseconds.
+	 *            Memory limit for the problem in megabytes.
 	 */
 	public void setMemoryLimit(long memoryLimit) {
 		this.memoryLimit = memoryLimit;
@@ -210,77 +202,6 @@ public class Problem {
 	public void setAuthors(List<String> authors) {
 		this.authors = authors;
 	}
-
-	// /**
-	// * @return The weights of the test cases. Weights represent the importance
-	// * of the test data upon the problem. The number of weights must be
-	// * the same as the number of test cases. Typically weights do not
-	// * apply for problems with checkers.
-	// */
-	// public List<Integer> getTestWeights() {
-	// return testWeights;
-	// }
-	//
-	// /**
-	// * Sets the weights of the test cases.
-	// *
-	// * @param testWeights
-	// * Weights of the test cases.
-	// */
-	// public void setTestWeights(List<Integer> testWeights) {
-	// this.testWeights = testWeights;
-	// }
-	//
-	// /**
-	// * @return The source code for the problem's checker (if any).
-	// */
-	// public String getChecker() {
-	// return checker;
-	// }
-	//
-	// /**
-	// * Sets the source code for the checker (if any).
-	// *
-	// * @param checker
-	// * The source code of the checker.
-	// */
-	// public void setChecker(String checker) {
-	// this.checker = checker;
-	// }
-	//
-	// /**
-	// * @return Source code of solutions from the authors of the problem.
-	// */
-	// public List<String> getAuthorSolutions() {
-	// return authorSolutions;
-	// }
-	//
-	// /**
-	// * Sets the source code for the solutions from the authors of the problem.
-	// *
-	// * @param authorSolutions
-	// * The solutions of the authors.
-	// */
-	// public void setAuthorSolutions(List<String> authorSolutions) {
-	// this.authorSolutions = authorSolutions;
-	// }
-	//
-	// /**
-	// * @return The test cases for the problem.
-	// */
-	// public List<String> getTests() {
-	// return tests;
-	// }
-	//
-	// /**
-	// * Sets the test cases for the problem.
-	// *
-	// * @param tests
-	// * Test data.
-	// */
-	// public void setTests(List<String> tests) {
-	// this.tests = tests;
-	// }
 
 	@Override
 	public String toString() {

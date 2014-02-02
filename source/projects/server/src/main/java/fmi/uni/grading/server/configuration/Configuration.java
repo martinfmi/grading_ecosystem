@@ -35,7 +35,7 @@ public class Configuration {
 	private List<MongoInstance> mongoInstances;
 
 	private List<GraderInstance> graderInstances;
-
+	
 	public void setPort(int port) {
 		this.port = port;
 	}

@@ -1,18 +1,6 @@
 package fmi.uni.grading.shared.client.repository;
 
-import java.util.LinkedList;
 import java.util.List;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
 
 import fmi.uni.grading.shared.AbstractClient;
 import fmi.uni.grading.shared.beans.Article;
@@ -89,7 +77,7 @@ public class CategoryClient extends AbstractClient<ICategoryService> {
 			throws ServerResponseException {
 		Category editedCategory = null;
 		try {
-			editedCategory = getService().createCategory(category);
+			editedCategory = getService().editCategory(category);
 		} catch (AbstractServerException ex) {
 			throw new ServerResponseException(ex);
 		}

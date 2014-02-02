@@ -46,6 +46,7 @@ public class TutorialService implements ITutorialService {
 			throw new MissingResourceException(String.format(
 					"No tutorial with ID '%s' found.", id));
 		}
+		
 		return tutorial;
 	}
 

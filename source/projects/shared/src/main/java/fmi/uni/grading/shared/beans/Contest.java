@@ -29,15 +29,24 @@ public class Contest {
 
 	private String startTime;
 
-	private int duration;
+	private Long duration;
 
 	private String about;
 
 	private String gradingStyle;
 
 	private List<String> problemOrder;
-
+	
 	private List<String> problemScores;
+	
+	@XmlElement(name = "id")
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	@XmlElement(name = "type")
 	public String getType() {
@@ -47,7 +56,7 @@ public class Contest {
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+
 	@XmlElement(name = "title")
 	public String getTitle() {
 		return title;
@@ -79,7 +88,7 @@ public class Contest {
 	 * @return The duration of the contest in seconds
 	 */
 	@XmlElement(name = "duration")
-	public int getDuration() {
+	public Long getDuration() {
 		return duration;
 	}
 
@@ -87,7 +96,7 @@ public class Contest {
 	 * @param duration
 	 *            The duration of the contest in seconds
 	 */
-	public void setDuration(int duration) {
+	public void setDuration(Long duration) {
 		this.duration = duration;
 	}
 

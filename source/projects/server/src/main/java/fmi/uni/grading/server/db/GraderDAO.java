@@ -11,7 +11,7 @@ import fmi.uni.grading.shared.beans.GraderInstance;
 
 public class GraderDAO {
 
-	public List<GraderInstance> getGraderInstance() {
+	public List<GraderInstance> getGraderInstances() {
 		MongoTemplate mongoTemplate = ServerCache.getMongoTemplate();
 		List<GraderInstance> graderInstances = mongoTemplate
 				.findAll(GraderInstance.class);

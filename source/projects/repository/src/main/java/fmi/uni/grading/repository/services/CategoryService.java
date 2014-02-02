@@ -14,6 +14,7 @@ import fmi.uni.grading.shared.beans.Category;
 import fmi.uni.grading.shared.beans.Problem;
 import fmi.uni.grading.shared.exceptions.AbstractServerException;
 import fmi.uni.grading.shared.exceptions.BadRequestException;
+import fmi.uni.grading.shared.exceptions.MissingResourceException;
 import fmi.uni.grading.shared.services.repository.ICategoryService;
 
 public class CategoryService implements ICategoryService {
@@ -35,13 +36,19 @@ public class CategoryService implements ICategoryService {
 	}
 
 	public Category getCategory(String id) throws AbstractServerException {
-		Category categories = null;
+		Category category = null;
 		try {
-			categories = categoryDAO.getCategory(id);
+			category = categoryDAO.getCategory(id);
 		} catch (DataAccessException ex) {
 			throw new BadRequestException(ex.getMessage());
 		}
-		return categories;
+		
+		if (category == null) {
+			throw new MissingResourceException(String.format(
+					"No category with ID '%s' found in repository.", id));
+		}
+		
+		return category;
 	}
 
 	public List<Category> getChildCategories(String parentId)

@@ -88,7 +88,7 @@ public abstract class Grader {
 
 	public abstract List<Problem> getContestProblems(String id, String contestId);
 
-	public abstract List<Problem> getContestProblem(String location,
+	public abstract Problem getContestProblem(String location,
 			String contestId, String problemId);
 
 	@NotSupported

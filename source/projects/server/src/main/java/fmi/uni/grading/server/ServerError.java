@@ -9,7 +9,7 @@ package fmi.uni.grading.server;
 public class ServerError extends Error {
 	
 	private static final long serialVersionUID = 4500809492127790282L;
-
+	
 	public ServerError() {
 		super();
 	}
@@ -21,7 +21,7 @@ public class ServerError extends Error {
 	public ServerError(Throwable message) {
 		super(message);
 	}
-
+	
 	public ServerError(String message, Throwable throwable) {
 		super(message, throwable);
 	}

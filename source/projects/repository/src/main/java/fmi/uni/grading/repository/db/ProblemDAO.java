@@ -152,7 +152,7 @@ public class ProblemDAO {
 
 	public Checker getChecker(String checkerId) {
 		MongoTemplate mongoTemplate = RepositoryCache.getMongoTemplate();
-		Query query = new Query(Criteria.where("checkerId").is(checkerId));
+		Query query = new Query(Criteria.where("id").is(checkerId));
 		Checker checker = mongoTemplate.findOne(query, Checker.class);
 		return checker;
 	}

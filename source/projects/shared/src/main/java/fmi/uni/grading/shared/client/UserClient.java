@@ -11,11 +11,11 @@ import fmi.uni.grading.shared.exceptions.client.ServerResponseException;
 import fmi.uni.grading.shared.services.IUserService;
 
 public class UserClient extends AbstractClient<IUserService> {
-	
+
 	public UserClient(String url, String user, String password) {
 		super(url, IUserService.class, user, password);
 	}
-
+	
 	public List<User> getUsers() throws ServerResponseException {
 		List<User> users = null;
 		try {
@@ -37,15 +37,15 @@ public class UserClient extends AbstractClient<IUserService> {
 		return user;
 	}
 
-	public User createUser(String handle, String name, String pass, Role role,
-			String details, Permissions permissions)
+	public User createUser(String handle, String name, String pass,
+			String email, Role role, String details, Permissions permissions)
 			throws ServerResponseException {
-		User user = buildUser(null, handle, name, pass, role, details,
+		User user = buildUser(null, handle, name, pass, email, role, details,
 				permissions);
 		User createdUser = createUser(user);
 		return createdUser;
 	}
-
+	
 	public User createUser(User user) throws ServerResponseException {
 		User createdUser = null;
 		try {
@@ -58,9 +58,9 @@ public class UserClient extends AbstractClient<IUserService> {
 	}
 
 	public User editUser(String id, String handle, String name, String pass,
-			Role role, String details, Permissions permissions)
+			String email, Role role, String details, Permissions permissions)
 			throws ServerResponseException {
-		User user = buildUser(id, handle, name, pass, role, details,
+		User user = buildUser(id, handle, name, pass, email, role, details,
 				permissions);
 		User editedUser = editUser(user);
 		return editedUser;
@@ -86,13 +86,14 @@ public class UserClient extends AbstractClient<IUserService> {
 	}
 
 	private User buildUser(String id, String handle, String name, String pass,
-			Role role, String details, Permissions permissions) {
+			String email, Role role, String details, Permissions permissions) {
 
 		User user = new User();
 		user.setId(id);
 		user.setHandle(handle);
 		user.setName(name);
 		user.setPass(pass);
+		user.setEmail(email);
 		user.setRole(role);
 		user.setDetails(details);
 		user.setPermissions(permissions);

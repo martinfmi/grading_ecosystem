@@ -44,7 +44,7 @@ public class ArticleService implements IArticleService {
 
 		if (article == null) {
 			throw new MissingResourceException(String.format(
-					"No article with ID '%s' found.", id));
+					"No article with ID '%s' found in repository.", id));
 		}
 		return article;
 	}

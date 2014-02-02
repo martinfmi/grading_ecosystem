@@ -29,6 +29,8 @@ public class GraderInstance {
 
 	private Boolean adminEnabled;
 
+	private Boolean requresPass = true;
+
 	public String getId() {
 		return id;
 	}
@@ -84,5 +86,14 @@ public class GraderInstance {
 
 	public void setAdminEnabled(Boolean adminEnabled) {
 		this.adminEnabled = adminEnabled;
+	}
+
+	@XmlElement(name = "requiresPass")
+	public Boolean getRequresPass() {
+		return requresPass;
+	}
+
+	public void setRequresPass(Boolean requresPass) {
+		this.requresPass = requresPass;
 	}
 }

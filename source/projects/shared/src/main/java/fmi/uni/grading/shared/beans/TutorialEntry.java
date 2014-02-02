@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlType;
 // stored in the '_class' attribute instead of the class FQDN \
 public class TutorialEntry {
 
-	private enum EntryType {
+	public enum EntryType {
 		ARTICLE, PROBLEM
 	};
 

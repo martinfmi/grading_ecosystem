@@ -103,7 +103,7 @@ public class UserService implements IUserService {
 			throw new BadRequestException("No handle provided.");
 		}
 
-		if (user.getName() != null) {
+		if (user.getName() == null) {
 			throw new BadRequestException("No name provided.");
 		}
 
@@ -115,6 +115,10 @@ public class UserService implements IUserService {
 		checkPass(pass);
 
 		if (user.getRole() == null) {
+			throw new BadRequestException("No role provided");
+		}
+
+		if (user.getPermissions() == null) {
 			throw new BadRequestException("No permissions provided");
 		}
 	}

@@ -42,7 +42,7 @@ public class Spoj0Grader extends Grader {
 	}
 
 	@Override
-	public List<Problem> getContestProblem(String location, String contestId,
+	public Problem getContestProblem(String location, String contestId,
 			String problemId) {
 		// TODO Auto-generated method stub
 		return null;

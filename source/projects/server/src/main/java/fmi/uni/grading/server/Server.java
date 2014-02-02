@@ -14,9 +14,11 @@ import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import fmi.uni.grading.server.configuration.Configuration;
+import fmi.uni.grading.server.db.GraderDAO;
 import fmi.uni.grading.server.grader.Grader;
 import fmi.uni.grading.shared.beans.GraderInstance;
 import fmi.uni.grading.shared.util.JaxbManager;
@@ -27,6 +29,9 @@ import fmi.uni.grading.shared.util.JaxbManager;
  * @author Martin Toshev
  */
 public class Server {
+
+	@Autowired
+	private static GraderDAO graderDAO;
 
 	private static final String BEAN_ID_JAXRS_SERVER = "jaxrsServer";
 
@@ -64,7 +69,7 @@ public class Server {
 
 		LOGGER.info("Setting up grader instances from configuration ...");
 		loadGraderInstances();
-		
+
 		LOGGER.info("Setting up services ... ");
 		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
 				FILE_CONTEXT);
@@ -95,10 +100,14 @@ public class Server {
 	}
 
 	private static void loadGraderInstances() {
+
+		// load from configuration and database
 		List<GraderInstance> instances = ServerCache.getConfiguration()
 				.getGraderInstances();
+		instances.addAll(graderDAO.getGraderInstances());
+		
 		for (GraderInstance instance : instances) {
-			if (ServerCache.getGraderType(instance.getType()) == null) {
+			if (ServerCache.getGrader(instance.getType()) == null) {
 				throw new ServerError(
 						"No grader with type: "
 								+ instance.getType()
@@ -158,7 +167,7 @@ public class Server {
 									+ appUrl.toString());
 				}
 
-				ServerCache.addGraderType(grader.getGraderType(), grader);
+				ServerCache.addGrader(grader.getGraderType(), grader);
 
 			} catch (MalformedURLException e) {
 				throw new ServerError(
@@ -193,7 +202,7 @@ public class Server {
 		} catch (JAXBException e) {
 			LOGGER.error("Failed to parse server configuration file.", e);
 		}
-		
+
 		return configuration;
 	}
 }

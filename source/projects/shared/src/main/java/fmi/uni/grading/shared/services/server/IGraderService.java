@@ -1,6 +1,8 @@
 package fmi.uni.grading.shared.services.server;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -27,7 +29,7 @@ import fmi.uni.grading.shared.exceptions.AbstractServerException;
  */
 @Path("graders")
 public interface IGraderService {
-	
+
 	/**
 	 * Retrieve all available grader types
 	 * 
@@ -37,9 +39,8 @@ public interface IGraderService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("types")
-	public List<String> getGraderTypes()
-			throws AbstractServerException;
-	
+	public Set<String> getGraderTypes() throws AbstractServerException;
+
 	/**
 	 * Retrieve all registered grader instances.
 	 * 
@@ -48,21 +49,21 @@ public interface IGraderService {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<GraderInstance> getGraderInstances()
+	public Collection<GraderInstance> getGraderInstances()
 			throws AbstractServerException;
 
 	/**
-	 * Retrieves a particular grader
+	 * Retrieves a particular grader instance
 	 * 
-	 * @param id
-	 *            The grader id
+	 * @param name
+	 *            The unique grader instance name
 	 * @return A {@link GraderInstance} instance
 	 * @throws AbstractServerException
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("{id}")
-	public GraderInstance getGraderInstance(@PathParam("id") String id)
+	@Path("{name}")
+	public GraderInstance getGraderInstance(@PathParam("name") String name)
 			throws AbstractServerException;
 
 	/**
@@ -98,15 +99,15 @@ public interface IGraderService {
 	/**
 	 * Deletes a grader instance.
 	 * 
-	 * @param id
-	 *            The grader instance
+	 * @param name
+	 *            The name of the grader instance
 	 * @throws AbstractServerException
 	 */
 	@DELETE
-	@Path("{id}")
-	public void deleteGraderInstance(@PathParam("id") String id)
+	@Path("{name}")
+	public void deleteGraderInstance(@PathParam("name") String name)
 			throws AbstractServerException;
-
+	
 	/**
 	 * Retrieves all top-level series in the specified grader instance.
 	 * 
@@ -347,11 +348,11 @@ public interface IGraderService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("{id}/contests/{constestId}/problems/{problemId}")
-	public List<Problem> getContestProblem(@PathParam("id") String id,
+	public Problem getContestProblem(@PathParam("id") String id,
 			@PathParam("contestId") String contestId,
 			@PathParam("problemId") String problemId)
 			throws AbstractServerException;
-
+	
 	/**
 	 * Creates a problem in a contest in a grader instance.
 	 * 

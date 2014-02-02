@@ -72,7 +72,7 @@ public class CategoryDAO {
 
 		if (category == null) {
 			throw new BadRequestException(String.format(
-					"No category with id: '%id' ", id));
+					"No category with id: '%s' ", id));
 		}
 
 		query = new Query();
@@ -90,7 +90,7 @@ public class CategoryDAO {
 
 		if (category == null) {
 			throw new BadRequestException(String.format(
-					"No category with id: '%id' ", id));
+					"No category with id: '%s' ", id));
 		}
 		
 		query = new Query();

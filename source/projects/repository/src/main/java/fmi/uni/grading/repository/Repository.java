@@ -21,7 +21,7 @@ import fmi.uni.grading.shared.util.JaxbManager;
  * @author Martin Toshev
  */
 public class Repository {
-	
+
 	private static final String BEAN_ID_JAXRS_SERVER = "jaxrsServer";
 
 	private static String FILE_CONTEXT = "spring.xml";
@@ -54,7 +54,7 @@ public class Repository {
 		
 		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
 				FILE_CONTEXT);
-		
+
 		// starting the repository - the 'create' method is invoked as an init
 		// method in the spring
 		// configuration
@@ -68,7 +68,7 @@ public class Repository {
 			repository.getBus().getOutInterceptors()
 					.add(new LoggingOutInterceptor());
 		}
-		
+
 		repository.create();
 
 		try {

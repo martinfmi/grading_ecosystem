@@ -78,11 +78,11 @@ public class ServerCache {
 		return configuration;
 	}
 
-	public static Grader getGraderType(String typeName) {
+	public static Grader getGrader(String typeName) {
 		return graderTypes.get(typeName);
 	}
 
-	public static void addGraderType(String typeName, Grader grader) {
+	public static void addGrader(String typeName, Grader grader) {
 		Grader existingGrader = graderTypes.putIfAbsent(typeName, grader);
 		if (existingGrader != null) {
 			throw new ServerError(String.format(
@@ -94,30 +94,33 @@ public class ServerCache {
 		return graderTypes.keySet();
 	}
 
-	public static GraderInstance getGraderInstance(String instanceName) {
-		return graderInstances.get(instanceName);
+	public static GraderInstance getGraderInstance(String id) {
+		return graderInstances.get(id);
 	}
 
 	public static void addGraderInstance(GraderInstance instance) {
 		GraderInstance existingInstance = graderInstances.putIfAbsent(
-				instance.getName(), instance);
+				instance.getId(), instance);
 		if (existingInstance != null) {
-			throw new ServerError(
-					String.format(
-							"Grader instance with name: '%s' already exists in server. ",
-							instance.getName()));
+			throw new ServerError(String.format(
+					"Grader instance with id: '%s' already exists in server. ",
+					instance.getId()));
 		}
 	}
 
 	public static void updateGraderInstance(GraderInstance instance) {
 		GraderInstance graderInstance = graderInstances.replace(
-				instance.getName(), instance);
+				instance.getId(), instance);
 		if (graderInstance == null) {
 			throw new ServerError(
 					String.format(
-							"Grader instance with name: '%s' does not exists in server. ",
-							instance.getName()));
+							"Grader instance with id: '%s' does not exists in server. ",
+							instance.getId()));
 		}
+	}
+
+	public static void removeGraderInstance(String id) {
+		graderInstances.remove(id);
 	}
 
 	public static Collection<GraderInstance> getGraderInstances() {

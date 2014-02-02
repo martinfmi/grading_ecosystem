@@ -17,28 +17,30 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @TypeAlias("user")
 // stored in the '_class' attribute instead of the class FQDN \
 public class User {
-	
+
 	public enum Role {
 		CONTESTANT, TEACHER, ADMIN
 	}
 
 	public enum Permissions {
-		READ_ONLY, WRITE_ONLY, READ_WRITE
+		READ_ONLY, READ_WRITE
 	}
 
 	@Id
 	private String id;
-	
+
 	private String handle;
 
 	private String name;
 
 	private String pass;
 
+	private String email;
+
 	private Role role;
 
 	private String details;
-	
+
 	private Permissions permissions;
 
 	@XmlElement(name = "id")
@@ -84,6 +86,22 @@ public class User {
 
 	public void setPass(String pass) {
 		this.pass = pass;
+	}
+
+	/**
+	 * @return The user email
+	 */
+	@XmlElement(name = "email")
+	public String getEmail() {
+		return email;
+	}
+	
+	/**
+	 * @param email
+	 *            The user email
+	 */
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	/**

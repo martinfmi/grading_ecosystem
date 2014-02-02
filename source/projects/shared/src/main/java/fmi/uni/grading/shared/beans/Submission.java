@@ -21,8 +21,6 @@ public class Submission {
 	@Id
 	private String id;
 
-	private GraderUser user;
-	
 	private String graderInstanceId;
 
 	private String series;
@@ -46,18 +44,6 @@ public class Submission {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-	
-	/**
-	 * @return Grader user for the submission
-	 */
-	@XmlElement(name="user")
-	public GraderUser getUser() {
-		return user;
-	}
-	
-	public void setUser(GraderUser user) {
-		this.user = user;
 	}
 	
 	/**
